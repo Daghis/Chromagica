@@ -6,6 +6,7 @@ import static net.bluevine.chromagica.ColorUtil.calculateDifference;
 import static net.bluevine.chromagica.ColorUtil.getAverageColor;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableTable;
 import com.google.common.collect.Table;
 import com.google.common.flogger.FluentLogger;
@@ -20,9 +21,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
+import net.bluevine.chromagica.data.FilamentData;
+import net.bluevine.chromagica.data.RGBCoefficients;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.math3.fitting.PolynomialCurveFitter;
 import org.apache.commons.math3.fitting.WeightedObservedPoints;
+import org.jetbrains.annotations.NotNull;
 
 public class ColorAnalyzer {
   private static final FluentLogger logger = FluentLogger.forEnclosingClass();
@@ -38,12 +42,18 @@ public class ColorAnalyzer {
 
   private Table<String, String, List<Color>> chipsPerColorSquare;
   private Map<String, Color> filamentColors;
+  private Map<String, Map<Color, Color>> filamentColorMappings;
+  private Map<String, RGBCoefficients> filamentCoefficients;
+  public ImmutableMap<String, FilamentData> filamentData;
 
   private static final double CHIP_COLOR_VIGNETTE = 0.8;
 
+  private static final char PLUS_SIGN = '+';
+  private static final char MINUS_SIGN = '−';
+
   private ColorAnalyzer() {}
 
-  private Color getAverageColorOfChip(BufferedImage image, int x, int y) {
+  private Color getAverageColorOfChip(@NotNull BufferedImage image, int x, int y) {
     double chipWidth = (double) image.getWidth() / numChipCols;
     double chipHeight = (double) image.getHeight() / numChipRows;
 
@@ -132,24 +142,38 @@ public class ColorAnalyzer {
   }
 
   private String formatCoefficient(double value) {
-    return String.format("%c %.5f", value < 0 ? '−' : '+', Math.abs(value));
+    return String.format("%c %.5f", value < 0 ? MINUS_SIGN : PLUS_SIGN, Math.abs(value));
   }
 
   private void getCoefficients() {
+    filamentColorMappings = new HashMap<>();
+    filamentCoefficients = new HashMap<>();
+
     for (Entry<String, Color> addedFilament : filamentColors.entrySet()) {
+      String addedColor = addedFilament.getKey();
+
+      Map<Color, Color> mappings = new HashMap<>();
+      Map<Color, Color> existingMappings = filamentColorMappings.get(addedColor);
+      if (existingMappings != null) {
+        mappings.putAll(existingMappings);
+      }
+
       WeightedObservedPoints redPoints = new WeightedObservedPoints();
       WeightedObservedPoints greenPoints = new WeightedObservedPoints();
       WeightedObservedPoints bluePoints = new WeightedObservedPoints();
 
       for (Entry<String, List<Color>> colorColumns :
-          chipsPerColorSquare.row(addedFilament.getKey()).entrySet()) {
-        if (addedFilament.getKey().equals(colorColumns.getKey())) {
+          chipsPerColorSquare.row(addedColor).entrySet()) {
+        String baseColor = colorColumns.getKey();
+        if (addedColor.equals(baseColor)) {
           // Skip "key" color squares
           continue;
         }
 
-        Color lastColor = filamentColors.get(colorColumns.getKey());
+        // Preload base color as initial for transition points.
+        Color lastColor = filamentColors.get(baseColor);
         for (Color color : colorColumns.getValue()) {
+          mappings.put(lastColor, color);
 
           redPoints.add(lastColor.getRed(), color.getRed());
           greenPoints.add(lastColor.getGreen(), color.getGreen());
@@ -160,30 +184,37 @@ public class ColorAnalyzer {
       }
 
       PolynomialCurveFitter fitter = PolynomialCurveFitter.create(2);
-      double[] redCoefficients = fitter.fit(redPoints.toList());
-      double[] greenCoefficients = fitter.fit(greenPoints.toList());
-      double[] blueCoefficients = fitter.fit(bluePoints.toList());
+      RGBCoefficients coefficients =
+          RGBCoefficients.create(
+              fitter.fit(redPoints.toList()),
+              fitter.fit(greenPoints.toList()),
+              fitter.fit(bluePoints.toList()));
+      filamentCoefficients.put(addedColor, coefficients);
+      filamentColorMappings.put(addedColor, mappings);
 
       logger.atInfo().log(
           """
           Color coefficients for %s:
-                🔴 = %.5f𝒓² %s𝒓 %s
-                🟢 = %.5f𝒈² %s𝒈 %s
-                🔵 = %.5f𝒃² %s𝒃 %s""",
+                🔴 = %s%.5f𝒓² %s𝒓 %s
+                🟢 = %s%.5f𝒈² %s𝒈 %s
+                🔵 = %s%.5f𝒃² %s𝒃 %s""",
           addedFilament.getKey(),
-          redCoefficients[2],
-          formatCoefficient(redCoefficients[1]),
-          formatCoefficient(redCoefficients[0]),
-          greenCoefficients[2],
-          formatCoefficient(greenCoefficients[1]),
-          formatCoefficient(greenCoefficients[0]),
-          blueCoefficients[2],
-          formatCoefficient(blueCoefficients[1]),
-          formatCoefficient(blueCoefficients[0]));
+          coefficients.r().a() < 0 ? "" : " ",
+          coefficients.r().a(),
+          formatCoefficient(coefficients.r().b()),
+          formatCoefficient(coefficients.r().c()),
+          coefficients.g().a() < 0 ? "" : " ",
+          coefficients.g().a(),
+          formatCoefficient(coefficients.g().b()),
+          formatCoefficient(coefficients.g().c()),
+          coefficients.b().a() < 0 ? "" : " ",
+          coefficients.b().a(),
+          formatCoefficient(coefficients.b().b()),
+          formatCoefficient(coefficients.b().c()));
     }
   }
 
-  public void analyze(
+  public FilamentData analyze(
       String imagePath, List<String> filamentNames, int numChipRows, int numChipCols)
       throws IOException {
     numColors = filamentNames.size();
@@ -196,5 +227,21 @@ public class ColorAnalyzer {
     loadChipColors(ImageIO.read(new File(imagePath)));
     findUniformColorGrids();
     getCoefficients();
+
+    ImmutableMap.Builder<String, FilamentData> newFilamentData =
+        ImmutableMap.<String, FilamentData>builder().putAll(filamentData);
+
+    for (Entry<String, Color> filamentColor : filamentColors.entrySet()) {
+      String colorName = filamentColor.getKey();
+      Color color = filamentColor.getValue();
+
+      FilamentData.Builder dataBuilder = FilamentData.builder();
+      dataBuilder.color(color);
+      dataBuilder.mappings(filamentColorMappings.get(colorName));
+      dataBuilder.coefficients(filamentCoefficients.get(colorName));
+      newFilamentData.put(colorName, dataBuilder.build());
+    }
+
+    return null;
   }
 }

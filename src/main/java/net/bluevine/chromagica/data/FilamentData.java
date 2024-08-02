@@ -6,10 +6,9 @@ import java.util.Map;
 
 @AutoValue
 public abstract class FilamentData {
-  public abstract String name();
-  public abstract Map<String, RGBCoefficients> coefficients();
-  public abstract Map<String, Map<Color, Color>> mappings();
-  public abstract Map<String, Color> colors();
+  public abstract Color color();
+  public abstract RGBCoefficients coefficients();
+  public abstract Map<Color, Color> mappings();
 
   public static Builder builder() {
     return new AutoValue_FilamentData.Builder();
@@ -17,10 +16,9 @@ public abstract class FilamentData {
 
   @AutoValue.Builder
   public abstract static class Builder {
-    public abstract Builder name(String name);
-    public abstract Builder coefficients(Map<String, RGBCoefficients> coefficients);
-    public abstract Builder mappings(Map<String, Map<Color, Color>> mappings);
-    public abstract Builder colors(Map<String, Color> colors);
+    public abstract Builder color(Color color);
+    public abstract Builder coefficients(RGBCoefficients coefficients);
+    public abstract Builder mappings(Map<Color, Color> mappings);
     public abstract FilamentData build();
   }
 }
