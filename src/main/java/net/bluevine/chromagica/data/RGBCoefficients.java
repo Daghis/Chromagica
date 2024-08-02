@@ -4,6 +4,10 @@ import com.google.auto.value.AutoValue;
 
 @AutoValue
 public abstract class RGBCoefficients {
+  public static final RGBCoefficients ZERO =
+      RGBCoefficients.create(
+          QuadraticCoefficients.ZERO, QuadraticCoefficients.ZERO, QuadraticCoefficients.ZERO);
+
   public abstract QuadraticCoefficients r();
 
   public abstract QuadraticCoefficients g();
@@ -25,6 +29,8 @@ public abstract class RGBCoefficients {
 
   @AutoValue
   public abstract static class QuadraticCoefficients {
+    public static final QuadraticCoefficients ZERO = create(new double[] {0, 0, 0});
+
     public abstract double a();
 
     public abstract double b();

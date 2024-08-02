@@ -57,8 +57,8 @@ public class ColorAnalyzer {
     double chipWidth = (double) image.getWidth() / numChipCols;
     double chipHeight = (double) image.getHeight() / numChipRows;
 
-    int vignetteWidth = (int) (chipWidth * CHIP_COLOR_VIGNETTE);
-    int vignetteHeight = (int) (chipHeight * CHIP_COLOR_VIGNETTE);
+    int vignetteWidth = (int) Math.max(1, (chipWidth * CHIP_COLOR_VIGNETTE));
+    int vignetteHeight = (int) Math.max(1, (chipHeight * CHIP_COLOR_VIGNETTE));
 
     double margin = (1.0 - CHIP_COLOR_VIGNETTE) / 2;
     int left = (int) ((x + margin) * chipWidth);
@@ -146,6 +146,11 @@ public class ColorAnalyzer {
   }
 
   private void getCoefficients() {
+    if (numColors == 1) {
+      logger.atWarning().log("Skipping coefficients due to only 1 color in image.");
+      return;
+    }
+
     filamentColorMappings = new HashMap<>();
     filamentCoefficients = new HashMap<>();
 
@@ -214,9 +219,8 @@ public class ColorAnalyzer {
     }
   }
 
-  public FilamentData analyze(
-      String imagePath, List<String> filamentNames, int numChipRows, int numChipCols)
-      throws IOException {
+  public void analyze(
+      BufferedImage image, List<String> filamentNames, int numChipRows, int numChipCols) {
     numColors = filamentNames.size();
     this.filamentNames = ImmutableList.copyOf(filamentNames);
     this.numChipRows = numChipRows;
@@ -224,12 +228,17 @@ public class ColorAnalyzer {
     numChipRowsPerColor = numChipRows / numColors;
     numChipColsPerColor = numChipCols / numColors;
 
-    loadChipColors(ImageIO.read(new File(imagePath)));
+    loadChipColors(image);
     findUniformColorGrids();
-    getCoefficients();
 
-    ImmutableMap.Builder<String, FilamentData> newFilamentData =
-        ImmutableMap.<String, FilamentData>builder().putAll(filamentData);
+    if (numColors > 1) {
+      getCoefficients();
+    }
+
+    ImmutableMap.Builder<String, FilamentData> newFilamentData = ImmutableMap.builder();
+    if (filamentData != null) {
+      newFilamentData.putAll(filamentData);
+    }
 
     for (Entry<String, Color> filamentColor : filamentColors.entrySet()) {
       String colorName = filamentColor.getKey();
@@ -237,11 +246,30 @@ public class ColorAnalyzer {
 
       FilamentData.Builder dataBuilder = FilamentData.builder();
       dataBuilder.color(color);
-      dataBuilder.mappings(filamentColorMappings.get(colorName));
-      dataBuilder.coefficients(filamentCoefficients.get(colorName));
+      Map<Color, Color> mappings = new HashMap<>();
+      if (filamentColorMappings != null) {
+        mappings = filamentColorMappings.get(colorName);
+      }
+      dataBuilder.mappings(mappings);
+
+      RGBCoefficients coefficients = RGBCoefficients.ZERO;
+      if (filamentCoefficients != null) {
+        coefficients = filamentCoefficients.get(colorName);
+      }
+      dataBuilder.coefficients(coefficients);
+
       newFilamentData.put(colorName, dataBuilder.build());
     }
 
-    return null;
+    filamentData = newFilamentData.build();
+  }
+
+  public static ColorAnalyzer analyze(
+      String imagePath, List<String> filamentNames, int numChipRows, int numChipCols)
+      throws IOException {
+    ColorAnalyzer analyzer = new ColorAnalyzer();
+    analyzer.analyze(ImageIO.read(new File(imagePath)), filamentNames, numChipRows, numChipCols);
+
+    return analyzer;
   }
 }

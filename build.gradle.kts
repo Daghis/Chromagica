@@ -26,8 +26,10 @@ dependencies {
     // Including the OpenCV jar provided by Homebrew
     implementation(files("/opt/homebrew/opt/opencv/share/java/opencv4/opencv-460.jar"))
 
-    testImplementation(platform("org.junit:junit-bom:5.10.3"))
-    testImplementation("org.junit.jupiter:junit-jupiter")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.3")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.10.2")
+    testImplementation("org.mockito:mockito-core:5.11.0")
+    testImplementation("org.mockito:mockito-junit-jupiter:5.12.0")
 }
 
 tasks.test {
