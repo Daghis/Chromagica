@@ -110,7 +110,7 @@ public class ColorAnalyzer {
       Map<String, Pair<Color, Double>> diagonal = new HashMap<>();
 
       for (int i = 0; i < numColors; i++) {
-        int columnForRow = direction == Diagonal.RIGHT ? i : numChipColsPerColor - i - 1;
+        int columnForRow = direction == Diagonal.LEFT ? i : numColors - i - 1;
 
         List<Color> diagonalChips =
             chipsPerColorSquare.get(filamentNames.get(i), filamentNames.get(columnForRow));
@@ -125,6 +125,7 @@ public class ColorAnalyzer {
         diagonal.put(filamentNames.get(i), Pair.of(overallAverageColor, maxDistanceFromAverage));
       }
 
+      // Need to ensure that colors are in the proper order. It's still important here.
       Map<String, Color> colorsAlongDiagonal =
           diagonal.entrySet().stream()
               .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getKey()));
@@ -134,7 +135,8 @@ public class ColorAnalyzer {
       differences.put(direction, distances);
     }
 
-    if (differences.get(Diagonal.LEFT) < differences.get(Diagonal.RIGHT)) {
+    logger.atWarning().log("%s", colorDiagonals);
+    if (differences.get(Diagonal.LEFT) <= differences.get(Diagonal.RIGHT)) {
       filamentColors = colorDiagonals.get(Diagonal.LEFT);
     } else {
       filamentColors = colorDiagonals.get(Diagonal.RIGHT);
@@ -174,7 +176,6 @@ public class ColorAnalyzer {
           // Skip "key" color squares
           continue;
         }
-
         // Preload base color as initial for transition points.
         Color lastColor = filamentColors.get(baseColor);
         for (Color color : colorColumns.getValue()) {
