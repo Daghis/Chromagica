@@ -40,9 +40,7 @@ jobs:
       uses: codecov/codecov-action@v4.0.1
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
-        flags: unittests
-        files: TEST-net.bluevine.chromagica.ColorAnalyzerTest.xml
-    
+
   dependency-submission:
 
     runs-on: ubuntu-latest
