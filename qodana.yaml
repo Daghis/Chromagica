@@ -14,7 +14,7 @@ profile:
 
 #Disable inspections
 exclude:
-  - name: AutoValue classes
+  - name: All
     paths:
       - src/main/java/net/bluevine/chromagica/data/FilamentData.java
       - src/main/java/net/bluevine/chromagica/data/RGBCoefficients.java
