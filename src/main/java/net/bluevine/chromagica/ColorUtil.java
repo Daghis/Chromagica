@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.util.Collection;
 
 public class ColorUtil {
-  // Utility class. Do not instantiate.
   private ColorUtil() {
     throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
   }
