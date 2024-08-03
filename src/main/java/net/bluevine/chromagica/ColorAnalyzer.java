@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
 import net.bluevine.chromagica.data.FilamentData;
 import net.bluevine.chromagica.data.RGBCoefficients;
+import net.bluevine.chromagica.data.RGBColor;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.math3.fitting.PolynomialCurveFitter;
 import org.apache.commons.math3.fitting.WeightedObservedPoints;
@@ -40,9 +41,9 @@ public class ColorAnalyzer {
   private int numChipRowsPerColor;
   private int numChipColsPerColor;
 
-  private Table<String, String, List<Color>> chipsPerColorSquare;
-  private Map<String, Color> filamentColors;
-  private Map<String, Map<Color, Color>> filamentColorMappings;
+  private Table<String, String, List<RGBColor>> chipsPerColorSquare;
+  private Map<String, RGBColor> filamentColors;
+  private Map<String, Map<RGBColor, RGBColor>> filamentColorMappings;
   private Map<String, RGBCoefficients> filamentCoefficients;
   public ImmutableMap<String, FilamentData> filamentData;
 
@@ -53,7 +54,7 @@ public class ColorAnalyzer {
 
   private ColorAnalyzer() {}
 
-  private Color getAverageColorOfChip(@NotNull BufferedImage image, int x, int y) {
+  private RGBColor getAverageColorOfChip(@NotNull BufferedImage image, int x, int y) {
     double chipWidth = (double) image.getWidth() / numChipCols;
     double chipHeight = (double) image.getHeight() / numChipRows;
 
@@ -65,27 +66,28 @@ public class ColorAnalyzer {
     int top = (int) ((y + margin) * chipHeight);
 
     // Get a list of RGB pixel values for the specified region
-    List<Color> vignetteColors =
+    List<RGBColor> vignetteColors =
         Arrays.stream(
                 image.getRGB(left, top, vignetteWidth, vignetteHeight, null, 0, vignetteWidth))
             .mapToObj(Color::new)
+            .map(RGBColor::create)
             .collect(toImmutableList());
 
     return getAverageColor(vignetteColors);
   }
 
   private void loadChipColors(BufferedImage image) {
-    ImmutableTable.Builder<String, String, List<Color>> perSquareBuilder = ImmutableTable.builder();
+    ImmutableTable.Builder<String, String, List<RGBColor>> perSquareBuilder = ImmutableTable.builder();
     for (int colorY = 0; colorY < numColors; colorY++) {
       for (int colorX = 0; colorX < numColors; colorX++) {
-        ImmutableList.Builder<Color> colorsBuilder = ImmutableList.builder();
+        ImmutableList.Builder<RGBColor> colorsBuilder = ImmutableList.builder();
         for (int chipY = colorY * numChipRowsPerColor;
             chipY < (colorY + 1) * numChipRowsPerColor;
             chipY++) {
           for (int chipX = colorX * numChipColsPerColor;
               chipX < (colorX + 1) * numChipColsPerColor;
               chipX++) {
-            Color color = getAverageColorOfChip(image, chipX, chipY);
+            RGBColor color = getAverageColorOfChip(image, chipX, chipY);
             colorsBuilder.add(color);
           }
         }
@@ -103,20 +105,20 @@ public class ColorAnalyzer {
       RIGHT
     }
 
-    Map<Diagonal, Map<String, Color>> colorDiagonals = new HashMap<>();
+    Map<Diagonal, Map<String, RGBColor>> colorDiagonals = new HashMap<>();
     Map<Diagonal, Double> differences = new HashMap<>();
 
     for (Diagonal direction : ImmutableList.of(Diagonal.LEFT, Diagonal.RIGHT)) {
-      Map<String, Pair<Color, Double>> diagonal = new HashMap<>();
+      Map<String, Pair<RGBColor, Double>> diagonal = new HashMap<>();
 
       for (int i = 0; i < numColors; i++) {
         int columnForRow = direction == Diagonal.LEFT ? i : numColors - i - 1;
 
-        List<Color> diagonalChips =
+        List<RGBColor> diagonalChips =
             chipsPerColorSquare.get(filamentNames.get(i), filamentNames.get(columnForRow));
         checkNotNull(diagonalChips);
 
-        Color overallAverageColor = getAverageColor(diagonalChips);
+        RGBColor overallAverageColor = getAverageColor(diagonalChips);
         double maxDistanceFromAverage =
             diagonalChips.stream()
                 .map(color -> calculateDifference(color, overallAverageColor))
@@ -126,7 +128,7 @@ public class ColorAnalyzer {
       }
 
       // Need to ensure that colors are in the proper order. It's still important here.
-      Map<String, Color> colorsAlongDiagonal =
+      Map<String, RGBColor> colorsAlongDiagonal =
           diagonal.entrySet().stream()
               .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getKey()));
       colorDiagonals.put(direction, colorsAlongDiagonal);
@@ -158,11 +160,11 @@ public class ColorAnalyzer {
     filamentColorMappings = new HashMap<>();
     filamentCoefficients = new HashMap<>();
 
-    for (Entry<String, Color> addedFilament : filamentColors.entrySet()) {
+    for (Entry<String, RGBColor> addedFilament : filamentColors.entrySet()) {
       String addedColor = addedFilament.getKey();
 
-      Map<Color, Color> mappings = new HashMap<>();
-      Map<Color, Color> existingMappings = filamentColorMappings.get(addedColor);
+      Map<RGBColor, RGBColor> mappings = new HashMap<>();
+      Map<RGBColor, RGBColor> existingMappings = filamentColorMappings.get(addedColor);
       if (existingMappings != null) {
         mappings.putAll(existingMappings);
       }
@@ -171,7 +173,7 @@ public class ColorAnalyzer {
       WeightedObservedPoints greenPoints = new WeightedObservedPoints();
       WeightedObservedPoints bluePoints = new WeightedObservedPoints();
 
-      for (Entry<String, List<Color>> colorColumns :
+      for (Entry<String, List<RGBColor>> colorColumns :
           chipsPerColorSquare.row(addedColor).entrySet()) {
         String baseColor = colorColumns.getKey();
         if (addedColor.equals(baseColor)) {
@@ -179,13 +181,13 @@ public class ColorAnalyzer {
           continue;
         }
         // Preload base color as initial for transition points.
-        Color lastColor = filamentColors.get(baseColor);
-        for (Color color : colorColumns.getValue()) {
+        RGBColor lastColor = filamentColors.get(baseColor);
+        for (RGBColor color : colorColumns.getValue()) {
           mappings.put(lastColor, color);
 
-          redPoints.add(lastColor.getRed(), color.getRed());
-          greenPoints.add(lastColor.getGreen(), color.getGreen());
-          bluePoints.add(lastColor.getBlue(), color.getBlue());
+          redPoints.add(lastColor.r(), color.r());
+          greenPoints.add(lastColor.g(), color.g());
+          bluePoints.add(lastColor.b(), color.b());
 
           lastColor = color;
         }
@@ -241,13 +243,13 @@ public class ColorAnalyzer {
       newFilamentData.putAll(filamentData);
     }
 
-    for (Entry<String, Color> filamentColor : filamentColors.entrySet()) {
+    for (Entry<String, RGBColor> filamentColor : filamentColors.entrySet()) {
       String colorName = filamentColor.getKey();
-      Color color = filamentColor.getValue();
+      RGBColor color = filamentColor.getValue();
 
       FilamentData.Builder dataBuilder = FilamentData.builder();
       dataBuilder.color(color);
-      Map<Color, Color> mappings = new HashMap<>();
+      Map<RGBColor, RGBColor> mappings = new HashMap<>();
       if (filamentColorMappings != null) {
         mappings = filamentColorMappings.get(colorName);
       }

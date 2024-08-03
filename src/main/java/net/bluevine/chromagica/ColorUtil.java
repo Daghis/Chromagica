@@ -2,22 +2,23 @@ package net.bluevine.chromagica;
 
 import java.awt.Color;
 import java.util.Collection;
+import net.bluevine.chromagica.data.RGBColor;
 
 public class ColorUtil {
   private ColorUtil() {
     throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
   }
 
-  public static double calculateDifference(Color color1, Color color2) {
+  public static double calculateDifference(RGBColor color1, RGBColor color2) {
     double[] lab1 = rgbToLab(color1);
     double[] lab2 = rgbToLab(color2);
 
     return euclideanDistance(lab1, lab2);
   }
 
-  public static Color getAverageColor(Collection<Color> colors) {
+  public static RGBColor getAverageColor(Collection<RGBColor> colors) {
     if (colors == null || colors.isEmpty()) {
-      return Color.BLACK;
+      return RGBColor.create(0, 0, 0);
     }
 
     int sumRed = 0;
@@ -25,21 +26,21 @@ public class ColorUtil {
     int sumBlue = 0;
     int count = colors.size();
 
-    for (Color color : colors) {
-      sumRed += color.getRed();
-      sumGreen += color.getGreen();
-      sumBlue += color.getBlue();
+    for (RGBColor color : colors) {
+      sumRed += color.r();
+      sumGreen += color.g();
+      sumBlue += color.b();
     }
 
     int averageRed = Math.round((float) sumRed / count);
     int averageGreen = Math.round((float) sumGreen / count);
     int averageBlue = Math.round((float) sumBlue / count);
 
-    return new Color(averageRed, averageGreen, averageBlue);
+    return RGBColor.create(averageRed, averageGreen, averageBlue);
   }
 
-  private static double[] rgbToLab(Color color) {
-    float[] rgb = color.getRGBColorComponents(null);
+  private static double[] rgbToLab(RGBColor color) {
+    float[] rgb = new float[] {color.r() / 255f, color.g() / 255f, color.b() / 255f};
     double[] xyz = rgbToXyz(rgb[0], rgb[1], rgb[2]);
     return xyzToLab(xyz[0], xyz[1], xyz[2]);
   }

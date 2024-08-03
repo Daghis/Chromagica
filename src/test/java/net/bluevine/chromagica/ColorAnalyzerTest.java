@@ -25,6 +25,7 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.google.common.collect.Iterables;
+import java.io.File;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
@@ -79,26 +80,29 @@ class ColorAnalyzerTest {
     String grayColor = "Gray";
     List<String> colorNames = List.of(purpleColor, grayColor);
 
-    ColorAnalyzer analyzer = ColorAnalyzer.analyze(
-        PURPLE_GRAY_4x4_IMAGE_PATH,
-        colorNames,
-        PURPLE_GRAY_4x4_CHIP_ROWS,
-        PURPLE_GRAY_4x4_CHIP_COLS);
+    ColorAnalyzer analyzer =
+        ColorAnalyzer.analyze(
+            PURPLE_GRAY_4x4_IMAGE_PATH,
+            colorNames,
+            PURPLE_GRAY_4x4_CHIP_ROWS,
+            PURPLE_GRAY_4x4_CHIP_COLS);
 
     assertEquals(PURPLE_COLOR, requireNonNull(analyzer.filamentData.get(purpleColor)).color());
     assertEquals(GRAY_COLOR, requireNonNull(analyzer.filamentData.get(grayColor)).color());
   }
+
   @Test
   void analyze_coefficients_rotated() throws Exception {
     String purpleColor = "Purple";
     String grayColor = "Gray";
     List<String> colorNames = List.of(purpleColor, grayColor);
 
-    ColorAnalyzer analyzer = ColorAnalyzer.analyze(
-        ROTATED_4x4_IMAGE_PATH,
-        colorNames,
-        PURPLE_GRAY_4x4_CHIP_ROWS,
-        PURPLE_GRAY_4x4_CHIP_COLS);
+    ColorAnalyzer analyzer =
+        ColorAnalyzer.analyze(
+            ROTATED_4x4_IMAGE_PATH,
+            colorNames,
+            PURPLE_GRAY_4x4_CHIP_ROWS,
+            PURPLE_GRAY_4x4_CHIP_COLS);
 
     assertEquals(PURPLE_COLOR, requireNonNull(analyzer.filamentData.get(purpleColor)).color());
     assertEquals(GRAY_COLOR, requireNonNull(analyzer.filamentData.get(grayColor)).color());

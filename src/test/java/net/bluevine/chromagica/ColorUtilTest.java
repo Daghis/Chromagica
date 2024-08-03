@@ -5,11 +5,11 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.awt.Color;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
+import net.bluevine.chromagica.data.RGBColor;
 import org.junit.jupiter.api.Test;
 
 class ColorUtilTest {
@@ -17,8 +17,8 @@ class ColorUtilTest {
 
   @Test
   void calculateDifference() {
-    Color color1 = Color.RED;
-    Color color2 = Color.WHITE;
+    RGBColor color1 = RGBColor.create(255, 0, 0);
+    RGBColor color2 = RGBColor.create(255, 255, 255);
     double expected = 11.55123;
 
     double result = ColorUtil.calculateDifference(color1, color2);
@@ -28,7 +28,7 @@ class ColorUtilTest {
 
   @Test
   void calculateDifference_zeroDifference() {
-    Color color = Color.PINK;
+    RGBColor color = RGBColor.create(255, 180, 240);
 
     double result = ColorUtil.calculateDifference(color, color);
 
@@ -37,28 +37,28 @@ class ColorUtilTest {
 
   @Test
   void getAverageColor() {
-    List<Color> colors = List.of(Color.BLUE, Color.YELLOW);
-    Color expected = new Color(128, 128, 128);
+    List<RGBColor> colors = List.of(RGBColor.create(0, 0, 255), RGBColor.create(255, 255, 0));
+    RGBColor expected = RGBColor.create(128, 128, 128);
 
-    Color result = ColorUtil.getAverageColor(colors);
+    RGBColor result = ColorUtil.getAverageColor(colors);
 
     assertEquals(expected, result);
   }
 
   @Test
   void getAverageColor_null() {
-    Color expected = Color.BLACK;
+    RGBColor expected = RGBColor.create(0, 0, 0);
 
-    Color result = ColorUtil.getAverageColor(null);
+    RGBColor result = ColorUtil.getAverageColor(null);
 
     assertEquals(expected, result);
   }
 
   @Test
   void getAverageColor_empty() {
-    Color expected = Color.BLACK;
+    RGBColor expected = RGBColor.create(0, 0, 0);
 
-    Color result = ColorUtil.getAverageColor(new ArrayList<>());
+    RGBColor result = ColorUtil.getAverageColor(new ArrayList<>());
 
     assertEquals(expected, result);
   }

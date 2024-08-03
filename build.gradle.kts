@@ -15,6 +15,7 @@ dependencies {
     compileOnly("com.google.auto.value:auto-value-annotations:1.11.0")
     implementation("com.google.auto.value:auto-value:1.11.0")
     annotationProcessor("com.google.auto.value:auto-value:1.11.0")
+    implementation("com.google.code.gson:gson:2.10")
 
     implementation("com.google.guava:guava:33.2.1-jre")
     implementation("com.google.flogger:flogger:0.8")
