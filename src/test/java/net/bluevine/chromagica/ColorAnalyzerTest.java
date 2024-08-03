@@ -25,7 +25,6 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.google.common.collect.Iterables;
-import java.io.File;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 

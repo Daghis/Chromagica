@@ -1,6 +1,5 @@
 package net.bluevine.chromagica;
 
-import java.awt.Color;
 import java.util.Collection;
 import net.bluevine.chromagica.data.RGBColor;
 
