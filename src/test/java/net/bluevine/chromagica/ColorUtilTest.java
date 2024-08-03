@@ -8,7 +8,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 class ColorUtilTest {
-  static final double DELTA = 0.00001;
+  static final double FLOAT_DELTA = 0.00001;
 
   @Test
   void calculateDifference() {
@@ -18,7 +18,7 @@ class ColorUtilTest {
 
     double result = ColorUtil.calculateDifference(color1, color2);
 
-    assertEquals(expected, result, DELTA);
+    assertEquals(expected, result, FLOAT_DELTA);
   }
 
   @Test
@@ -27,7 +27,7 @@ class ColorUtilTest {
 
     double result = ColorUtil.calculateDifference(color, color);
 
-    assertEquals(0, result, DELTA);
+    assertEquals(0, result, FLOAT_DELTA);
   }
 
   @Test
@@ -56,5 +56,10 @@ class ColorUtilTest {
     Color result = ColorUtil.getAverageColor(new ArrayList<>());
 
     assertEquals(expected, result);
+  }
+
+  @Test
+  void colorUtil_constructor() {
+    new ColorUtil();
   }
 }
