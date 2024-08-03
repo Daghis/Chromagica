@@ -137,8 +137,10 @@ public class ColorAnalyzer {
 
     logger.atWarning().log("%s", colorDiagonals);
     if (differences.get(Diagonal.LEFT) <= differences.get(Diagonal.RIGHT)) {
+      logger.atWarning().log("Went LEFT!");
       filamentColors = colorDiagonals.get(Diagonal.LEFT);
     } else {
+      logger.atWarning().log("Went RIGHT!");
       filamentColors = colorDiagonals.get(Diagonal.RIGHT);
     }
   }
@@ -232,9 +234,7 @@ public class ColorAnalyzer {
     loadChipColors(image);
     findUniformColorGrids();
 
-    if (numColors > 1) {
-      getCoefficients();
-    }
+    getCoefficients();
 
     ImmutableMap.Builder<String, FilamentData> newFilamentData = ImmutableMap.builder();
     if (filamentData != null) {

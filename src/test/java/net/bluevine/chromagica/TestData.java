@@ -23,4 +23,13 @@ public class TestData {
   public static final int GREEN_YELLOW_2x2_CHIP_COLS = 2;
   public static final Color GREEN_COLOR = new Color(0, 255, 0);
   public static final Color YELLOW_COLOR = new Color(255, 255, 0);
+
+  public static final String PURPLE_GRAY_4x4_IMAGE_PATH=
+      requireNonNull(TestData.class.getResource("/Purple+Gray-4x4.png")).getFile();
+  public static final String ROTATED_4x4_IMAGE_PATH=
+      requireNonNull(TestData.class.getResource("/Purple+Gray-4x4-rotated.png")).getFile();
+  public static final int PURPLE_GRAY_4x4_CHIP_ROWS = 4;
+  public static final int PURPLE_GRAY_4x4_CHIP_COLS = 4;
+  public static final Color PURPLE_COLOR = new Color(100, 25, 150);
+  public static final Color GRAY_COLOR = new Color(150, 180, 200);
 }

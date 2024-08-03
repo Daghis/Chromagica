@@ -21,6 +21,8 @@ dependencies {
     implementation("com.google.flogger:flogger-system-backend:0.8")
     implementation("commons-cli:commons-cli:1.8.0")
 
+    implementation("me.tongfei:progressbar:0.10.1")
+
     implementation("org.apache.commons:commons-lang3:3.15.0")
     implementation("org.apache.commons:commons-math3:3.6")
 
