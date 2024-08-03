@@ -4,6 +4,11 @@ import java.awt.Color;
 import java.util.Collection;
 
 public class ColorUtil {
+  // Utility class. Do not instantiate.
+  private ColorUtil() {
+    throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
+  }
+
   public static double calculateDifference(Color color1, Color color2) {
     double[] lab1 = rgbToLab(color1);
     double[] lab2 = rgbToLab(color2);

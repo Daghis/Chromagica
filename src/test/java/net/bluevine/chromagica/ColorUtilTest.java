@@ -1,8 +1,14 @@
 package net.bluevine.chromagica;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.awt.Color;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -59,7 +65,16 @@ class ColorUtilTest {
   }
 
   @Test
-  void colorUtil_constructor() {
-    new ColorUtil();
+  void colorUtil_constructorIsPrivate() throws Exception {
+    Constructor<ColorUtil> constructor = ColorUtil.class.getDeclaredConstructor();
+    assertFalse(constructor.canAccess(null));
+  }
+
+  @Test
+  void colorUtil_constructorException() throws Exception {
+    Constructor<ColorUtil> constructor = ColorUtil.class.getDeclaredConstructor();
+    constructor.setAccessible(true);
+    Exception exception = assertThrows(InvocationTargetException.class, constructor::newInstance);
+    assertInstanceOf(UnsupportedOperationException.class, exception.getCause());
   }
 }
