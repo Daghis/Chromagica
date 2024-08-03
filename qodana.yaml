@@ -19,7 +19,7 @@ exclude:
       - src/main/java/net/bluevine/chromagica/data/FilamentData.java
       - src/main/java/net/bluevine/chromagica/data/RGBCoefficients.java
 
-projectJDK: 17 #(Applied in CI/CD pipeline)
+projectJDK: "17" #(Applied in CI/CD pipeline)
 
 #Execute shell command before Qodana execution (Applied in CI/CD pipeline)
 #bootstrap: sh ./prepare-qodana.sh
