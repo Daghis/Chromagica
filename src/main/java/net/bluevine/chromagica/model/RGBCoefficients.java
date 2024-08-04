@@ -16,30 +16,20 @@ public class RGBCoefficients {
 
   public RGBCoefficients(double[] r, double[] g, double[] b) {
     rgbCoefficients[0] = new QuadraticCoefficients(r);
+    rgbCoefficients[1] = new QuadraticCoefficients(g);
+    rgbCoefficients[2] = new QuadraticCoefficients(b);
   }
 
   public QuadraticCoefficients getR() {
     return rgbCoefficients[0];
   }
 
-  public void setR(QuadraticCoefficients r) {
-    rgbCoefficients[0] = r;
-  }
-
   public QuadraticCoefficients getG() {
     return rgbCoefficients[1];
   }
 
-  public void setG(QuadraticCoefficients g) {
-    rgbCoefficients[1] = g;
-  }
-
   public QuadraticCoefficients getB() {
     return rgbCoefficients[2];
-  }
-
-  public void setB(QuadraticCoefficients b) {
-    rgbCoefficients[2] = b;
   }
 
   @Data
