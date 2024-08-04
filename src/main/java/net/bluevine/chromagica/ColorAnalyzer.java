@@ -210,18 +210,18 @@ public class ColorAnalyzer {
                 🟢 = %s%.5f𝒈² %s𝒈 %s
                 🔵 = %s%.5f𝒃² %s𝒃 %s""",
           addedFilament.getKey(),
-          coefficients.getR().getA() < 0 ? "" : " ",
-          coefficients.getR().getA(),
-          formatCoefficient(coefficients.getR().getB()),
-          formatCoefficient(coefficients.getR().getC()),
-          coefficients.getG().getA() < 0 ? "" : " ",
-          coefficients.getG().getA(),
-          formatCoefficient(coefficients.getG().getB()),
-          formatCoefficient(coefficients.getG().getC()),
-          coefficients.getB().getA() < 0 ? "" : " ",
-          coefficients.getB().getA(),
-          formatCoefficient(coefficients.getB().getB()),
-          formatCoefficient(coefficients.getB().getC()));
+          coefficients.getR()[2] < 0 ? "" : " ",
+          coefficients.getR()[2],
+          formatCoefficient(coefficients.getR()[1]),
+          formatCoefficient(coefficients.getR()[0]),
+          coefficients.getG()[2] < 0 ? "" : " ",
+          coefficients.getG()[2],
+          formatCoefficient(coefficients.getG()[1]),
+          formatCoefficient(coefficients.getG()[0]),
+          coefficients.getB()[2] < 0 ? "" : " ",
+          coefficients.getB()[2],
+          formatCoefficient(coefficients.getB()[1]),
+          formatCoefficient(coefficients.getB()[0]));
     }
   }
 
