@@ -1,45 +1,60 @@
 package net.bluevine.chromagica.model;
 
-import com.google.auto.value.AutoValue;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
-@AutoValue
-public abstract class RGBCoefficients {
+@Data
+@AllArgsConstructor
+public class RGBCoefficients {
+  private QuadraticCoefficients[] rgbCoefficients = new QuadraticCoefficients[3];
+
   public static final RGBCoefficients ZERO =
-      RGBCoefficients.create(
-          QuadraticCoefficients.ZERO, QuadraticCoefficients.ZERO, QuadraticCoefficients.ZERO);
+      new RGBCoefficients(
+          new QuadraticCoefficients[] {
+            QuadraticCoefficients.ZERO, QuadraticCoefficients.ZERO, QuadraticCoefficients.ZERO
+          });
 
-  public abstract QuadraticCoefficients r();
-
-  public abstract QuadraticCoefficients g();
-
-  public abstract QuadraticCoefficients b();
-
-  public static RGBCoefficients create(
-      QuadraticCoefficients r, QuadraticCoefficients g, QuadraticCoefficients b) {
-    return new AutoValue_RGBCoefficients(r, g, b);
+  public RGBCoefficients(double[] r, double[] g, double[] b) {
+    rgbCoefficients[0] = new QuadraticCoefficients(r);
   }
 
-  public static RGBCoefficients create(
-      double[] redCoefficients, double[] greenCoefficients, double[] blueCoefficients) {
-    return new AutoValue_RGBCoefficients(
-        QuadraticCoefficients.create(redCoefficients),
-        QuadraticCoefficients.create(greenCoefficients),
-        QuadraticCoefficients.create(blueCoefficients));
+  public QuadraticCoefficients getR() {
+    return rgbCoefficients[0];
   }
 
-  @AutoValue
-  public abstract static class QuadraticCoefficients {
-    public static final QuadraticCoefficients ZERO = create(new double[] {0, 0, 0});
+  public void setR(QuadraticCoefficients r) {
+    rgbCoefficients[0] = r;
+  }
 
-    public abstract double a();
+  public QuadraticCoefficients getG() {
+    return rgbCoefficients[1];
+  }
 
-    public abstract double b();
+  public void setG(QuadraticCoefficients g) {
+    rgbCoefficients[1] = g;
+  }
 
-    public abstract double c();
+  public QuadraticCoefficients getB() {
+    return rgbCoefficients[2];
+  }
 
-    public static QuadraticCoefficients create(double[] coefficients) {
-      return new AutoValue_RGBCoefficients_QuadraticCoefficients(
-          coefficients[2], coefficients[1], coefficients[0]);
+  public void setB(QuadraticCoefficients b) {
+    rgbCoefficients[2] = b;
+  }
+
+  @Data
+  @AllArgsConstructor
+  public static class QuadraticCoefficients {
+    private double a;
+    private double b;
+    private double c;
+
+    public static final QuadraticCoefficients ZERO = new QuadraticCoefficients(0, 0, 0);
+
+    public QuadraticCoefficients(double[] coeffs) {
+      a = coeffs[0];
+      b = coeffs[1];
+      c = coeffs[2];
     }
   }
 }

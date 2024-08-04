@@ -17,8 +17,8 @@ class ColorUtilTest {
 
   @Test
   void calculateDifference() {
-    RGBColor color1 = RGBColor.create(255, 0, 0);
-    RGBColor color2 = RGBColor.create(255, 255, 255);
+    RGBColor color1 = new RGBColor(255, 0, 0);
+    RGBColor color2 = new RGBColor(255, 255, 255);
     double expected = 11.55123;
 
     double result = ColorUtil.calculateDifference(color1, color2);
@@ -28,7 +28,7 @@ class ColorUtilTest {
 
   @Test
   void calculateDifference_zeroDifference() {
-    RGBColor color = RGBColor.create(255, 180, 240);
+    RGBColor color = new RGBColor(255, 180, 240);
 
     double result = ColorUtil.calculateDifference(color, color);
 
@@ -37,8 +37,8 @@ class ColorUtilTest {
 
   @Test
   void getAverageColor() {
-    List<RGBColor> colors = List.of(RGBColor.create(0, 0, 255), RGBColor.create(255, 255, 0));
-    RGBColor expected = RGBColor.create(128, 128, 128);
+    List<RGBColor> colors = List.of(new RGBColor(0, 0, 255), new RGBColor(255, 255, 0));
+    RGBColor expected = new RGBColor(128, 128, 128);
 
     RGBColor result = ColorUtil.getAverageColor(colors);
 
@@ -47,7 +47,7 @@ class ColorUtilTest {
 
   @Test
   void getAverageColor_null() {
-    RGBColor expected = RGBColor.create(0, 0, 0);
+    RGBColor expected = new RGBColor(0, 0, 0);
 
     RGBColor result = ColorUtil.getAverageColor(null);
 
@@ -56,7 +56,7 @@ class ColorUtilTest {
 
   @Test
   void getAverageColor_empty() {
-    RGBColor expected = RGBColor.create(0, 0, 0);
+    RGBColor expected = new RGBColor(0, 0, 0);
 
     RGBColor result = ColorUtil.getAverageColor(new ArrayList<>());
 

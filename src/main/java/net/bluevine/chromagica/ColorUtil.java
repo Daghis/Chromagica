@@ -17,7 +17,7 @@ public class ColorUtil {
 
   public static RGBColor getAverageColor(Collection<RGBColor> colors) {
     if (colors == null || colors.isEmpty()) {
-      return RGBColor.create(0, 0, 0);
+      return new RGBColor(0, 0, 0);
     }
 
     int sumRed = 0;
@@ -26,20 +26,20 @@ public class ColorUtil {
     int count = colors.size();
 
     for (RGBColor color : colors) {
-      sumRed += color.r();
-      sumGreen += color.g();
-      sumBlue += color.b();
+      sumRed += color.getR();
+      sumGreen += color.getG();
+      sumBlue += color.getB();
     }
 
     int averageRed = Math.round((float) sumRed / count);
     int averageGreen = Math.round((float) sumGreen / count);
     int averageBlue = Math.round((float) sumBlue / count);
 
-    return RGBColor.create(averageRed, averageGreen, averageBlue);
+    return new RGBColor(averageRed, averageGreen, averageBlue);
   }
 
   private static double[] rgbToLab(RGBColor color) {
-    float[] rgb = new float[] {color.r() / 255f, color.g() / 255f, color.b() / 255f};
+    float[] rgb = new float[] {color.getR() / 255f, color.getG() / 255f, color.getB() / 255f};
     double[] xyz = rgbToXyz(rgb[0], rgb[1], rgb[2]);
     return xyzToLab(xyz[0], xyz[1], xyz[2]);
   }

@@ -26,33 +26,40 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.google.common.collect.Iterables;
 import java.util.List;
+import java.util.Map;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class ColorAnalyzerTest {
+  private ColorAnalyzer analyzer;
+
+  @BeforeEach
+  public void setUp() {
+    analyzer = new ColorAnalyzer(Map.of());
+  }
+
   @Test
   void analyze_simpleImage() throws Exception {
     String colorName = "Orange";
 
-    ColorAnalyzer analyzer =
-        ColorAnalyzer.analyze(
-            ORANGE_1x1_IMAGE_PATH, List.of(colorName), ORANGE_1x1_CHIP_ROWS, ORANGE_1x1_CHIP_COLS);
+    analyzer.analyze(
+        ORANGE_1x1_IMAGE_PATH, List.of(colorName), ORANGE_1x1_CHIP_ROWS, ORANGE_1x1_CHIP_COLS);
 
     assertEquals(colorName, Iterables.getOnlyElement(analyzer.filamentData.keySet()));
     assertEquals(
-        ORANGE_1x1_COLOR, Iterables.getOnlyElement(analyzer.filamentData.values()).color());
+        ORANGE_1x1_COLOR, Iterables.getOnlyElement(analyzer.filamentData.values()).getColor());
   }
 
   @Test
   void analyze_multiplePixelsPerChip_sameColor() throws Exception {
     String colorName = "Yellow";
 
-    ColorAnalyzer analyzer =
-        ColorAnalyzer.analyze(
-            YELLOW_4x3_IMAGE_PATH, List.of(colorName), YELLOW_4x3_CHIP_ROWS, YELLOW_4x3_CHIP_COLS);
+    analyzer.analyze(
+        YELLOW_4x3_IMAGE_PATH, List.of(colorName), YELLOW_4x3_CHIP_ROWS, YELLOW_4x3_CHIP_COLS);
 
     assertEquals(colorName, Iterables.getOnlyElement(analyzer.filamentData.keySet()));
     assertEquals(
-        YELLOW_4x3_COLOR, Iterables.getOnlyElement(analyzer.filamentData.values()).color());
+        YELLOW_4x3_COLOR, Iterables.getOnlyElement(analyzer.filamentData.values()).getColor());
   }
 
   @Test
@@ -61,16 +68,16 @@ class ColorAnalyzerTest {
     String yellowColor = "Yellow";
     List<String> colorNames = List.of(greenColor, yellowColor);
 
-    ColorAnalyzer analyzer =
-        ColorAnalyzer.analyze(
-            GREEN_YELLOW_2x2_IMAGE_PATH,
-            colorNames,
-            GREEN_YELLOW_2x2_CHIP_ROWS,
-            GREEN_YELLOW_2x2_CHIP_COLS);
+    analyzer.analyze(
+        GREEN_YELLOW_2x2_IMAGE_PATH,
+        colorNames,
+        GREEN_YELLOW_2x2_CHIP_ROWS,
+        GREEN_YELLOW_2x2_CHIP_COLS);
 
     assertThat(analyzer.filamentData.keySet(), containsInAnyOrder(colorNames.toArray()));
-    assertEquals(GREEN_2x2_COLOR, requireNonNull(analyzer.filamentData.get(greenColor)).color());
-    assertEquals(YELLOW_2x2_COLOR, requireNonNull(analyzer.filamentData.get(yellowColor)).color());
+    assertEquals(GREEN_2x2_COLOR, requireNonNull(analyzer.filamentData.get(greenColor)).getColor());
+    assertEquals(
+        YELLOW_2x2_COLOR, requireNonNull(analyzer.filamentData.get(yellowColor)).getColor());
   }
 
   @Test
@@ -79,15 +86,15 @@ class ColorAnalyzerTest {
     String grayColor = "Gray";
     List<String> colorNames = List.of(purpleColor, grayColor);
 
-    ColorAnalyzer analyzer =
-        ColorAnalyzer.analyze(
-            PURPLE_GRAY_4x4_IMAGE_PATH,
-            colorNames,
-            PURPLE_GRAY_4x4_CHIP_ROWS,
-            PURPLE_GRAY_4x4_CHIP_COLS);
+    analyzer.analyze(
+        PURPLE_GRAY_4x4_IMAGE_PATH,
+        colorNames,
+        PURPLE_GRAY_4x4_CHIP_ROWS,
+        PURPLE_GRAY_4x4_CHIP_COLS);
 
-    assertEquals(PURPLE_4x4_COLOR, requireNonNull(analyzer.filamentData.get(purpleColor)).color());
-    assertEquals(GRAY_4x4_COLOR, requireNonNull(analyzer.filamentData.get(grayColor)).color());
+    assertEquals(
+        PURPLE_4x4_COLOR, requireNonNull(analyzer.filamentData.get(purpleColor)).getColor());
+    assertEquals(GRAY_4x4_COLOR, requireNonNull(analyzer.filamentData.get(grayColor)).getColor());
   }
 
   @Test
@@ -96,14 +103,11 @@ class ColorAnalyzerTest {
     String grayColor = "Gray";
     List<String> colorNames = List.of(purpleColor, grayColor);
 
-    ColorAnalyzer analyzer =
-        ColorAnalyzer.analyze(
-            ROTATED_4x4_IMAGE_PATH,
-            colorNames,
-            PURPLE_GRAY_4x4_CHIP_ROWS,
-            PURPLE_GRAY_4x4_CHIP_COLS);
+    analyzer.analyze(
+        ROTATED_4x4_IMAGE_PATH, colorNames, PURPLE_GRAY_4x4_CHIP_ROWS, PURPLE_GRAY_4x4_CHIP_COLS);
 
-    assertEquals(PURPLE_4x4_COLOR, requireNonNull(analyzer.filamentData.get(purpleColor)).color());
-    assertEquals(GRAY_4x4_COLOR, requireNonNull(analyzer.filamentData.get(grayColor)).color());
+    assertEquals(
+        PURPLE_4x4_COLOR, requireNonNull(analyzer.filamentData.get(purpleColor)).getColor());
+    assertEquals(GRAY_4x4_COLOR, requireNonNull(analyzer.filamentData.get(grayColor)).getColor());
   }
 }

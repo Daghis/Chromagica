@@ -1,29 +1,48 @@
 package net.bluevine.chromagica.model;
 
-import com.google.auto.value.AutoValue;
 import java.awt.Color;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@AutoValue
-public abstract class RGBColor implements Comparable<RGBColor> {
-  public abstract int r();
-  public abstract int g();
-  public abstract int b();
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class RGBColor implements Comparable<RGBColor> {
+  private int[] rgb = new int[3];
 
-  public static RGBColor create(Color color) {
-    return new AutoValue_RGBColor(color.getRed(), color.getGreen(), color.getBlue());
+  public RGBColor(Color color) {
+    rgb[0] = color.getRed();
+    rgb[1] = color.getGreen();
+    rgb[2] = color.getBlue();
   }
-  public static RGBColor create(int r, int g, int b) {
-    return new AutoValue_RGBColor(r, g, b);
+
+  public RGBColor(int r, int g, int b) {
+    rgb[0] = r;
+    rgb[1] = g;
+    rgb[2] = b;
+  }
+
+  public int getR() {
+    return rgb[0];
+  }
+
+  public int getG() {
+    return rgb[1];
+  }
+
+  public int getB() {
+    return rgb[2];
   }
 
   @Override
   public int compareTo(RGBColor other) {
-    int result = Integer.compare(this.r(), other.r());
+    int result = Integer.compare(this.getR(), other.getR());
     if (result != 0) return result;
 
-    result = Integer.compare(this.g(), other.g());
+    result = Integer.compare(this.getG(), other.getG());
     if (result != 0) return result;
 
-    return Integer.compare(this.b(), other.b());
+    return Integer.compare(this.getB(), other.getB());
   }
 }

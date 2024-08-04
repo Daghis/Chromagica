@@ -27,10 +27,11 @@ import net.bluevine.chromagica.model.RGBColor;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.math3.fitting.PolynomialCurveFitter;
 import org.apache.commons.math3.fitting.WeightedObservedPoints;
-import org.jetbrains.annotations.NotNull;
 
 public class ColorAnalyzer {
   private static final FluentLogger logger = FluentLogger.forEnclosingClass();
+
+  public Map<String, FilamentData> filamentData;
 
   private int numColors;
   private List<String> filamentNames;
@@ -45,16 +46,18 @@ public class ColorAnalyzer {
   private Map<String, RGBColor> filamentColors;
   private Map<String, Map<RGBColor, RGBColor>> filamentColorMappings;
   private Map<String, RGBCoefficients> filamentCoefficients;
-  public ImmutableMap<String, FilamentData> filamentData;
 
   private static final double CHIP_COLOR_VIGNETTE = 0.8;
 
   private static final char PLUS_SIGN = '+';
   private static final char MINUS_SIGN = '−';
 
-  private ColorAnalyzer() {}
+  public ColorAnalyzer(Map<String, FilamentData> filamentData) {
+    checkNotNull(filamentData);
+    this.filamentData = ImmutableMap.copyOf(filamentData);
+  }
 
-  private RGBColor getAverageColorOfChip(@NotNull BufferedImage image, int x, int y) {
+  private RGBColor getAverageColorOfChip(BufferedImage image, int x, int y) {
     double chipWidth = (double) image.getWidth() / numChipCols;
     double chipHeight = (double) image.getHeight() / numChipRows;
 
@@ -70,14 +73,15 @@ public class ColorAnalyzer {
         Arrays.stream(
                 image.getRGB(left, top, vignetteWidth, vignetteHeight, null, 0, vignetteWidth))
             .mapToObj(Color::new)
-            .map(RGBColor::create)
+            .map(RGBColor::new)
             .collect(toImmutableList());
 
     return getAverageColor(vignetteColors);
   }
 
   private void loadChipColors(BufferedImage image) {
-    ImmutableTable.Builder<String, String, List<RGBColor>> perSquareBuilder = ImmutableTable.builder();
+    ImmutableTable.Builder<String, String, List<RGBColor>> perSquareBuilder =
+        ImmutableTable.builder();
     for (int colorY = 0; colorY < numColors; colorY++) {
       for (int colorX = 0; colorX < numColors; colorX++) {
         ImmutableList.Builder<RGBColor> colorsBuilder = ImmutableList.builder();
@@ -137,12 +141,9 @@ public class ColorAnalyzer {
       differences.put(direction, distances);
     }
 
-    logger.atWarning().log("%s", colorDiagonals);
     if (differences.get(Diagonal.LEFT) <= differences.get(Diagonal.RIGHT)) {
-      logger.atWarning().log("Went LEFT!");
       filamentColors = colorDiagonals.get(Diagonal.LEFT);
     } else {
-      logger.atWarning().log("Went RIGHT!");
       filamentColors = colorDiagonals.get(Diagonal.RIGHT);
     }
   }
@@ -185,9 +186,9 @@ public class ColorAnalyzer {
         for (RGBColor color : colorColumns.getValue()) {
           mappings.put(lastColor, color);
 
-          redPoints.add(lastColor.r(), color.r());
-          greenPoints.add(lastColor.g(), color.g());
-          bluePoints.add(lastColor.b(), color.b());
+          redPoints.add(lastColor.getR(), color.getR());
+          greenPoints.add(lastColor.getG(), color.getG());
+          bluePoints.add(lastColor.getB(), color.getB());
 
           lastColor = color;
         }
@@ -195,7 +196,7 @@ public class ColorAnalyzer {
 
       PolynomialCurveFitter fitter = PolynomialCurveFitter.create(2);
       RGBCoefficients coefficients =
-          RGBCoefficients.create(
+          new RGBCoefficients(
               fitter.fit(redPoints.toList()),
               fitter.fit(greenPoints.toList()),
               fitter.fit(bluePoints.toList()));
@@ -209,18 +210,18 @@ public class ColorAnalyzer {
                 🟢 = %s%.5f𝒈² %s𝒈 %s
                 🔵 = %s%.5f𝒃² %s𝒃 %s""",
           addedFilament.getKey(),
-          coefficients.r().a() < 0 ? "" : " ",
-          coefficients.r().a(),
-          formatCoefficient(coefficients.r().b()),
-          formatCoefficient(coefficients.r().c()),
-          coefficients.g().a() < 0 ? "" : " ",
-          coefficients.g().a(),
-          formatCoefficient(coefficients.g().b()),
-          formatCoefficient(coefficients.g().c()),
-          coefficients.b().a() < 0 ? "" : " ",
-          coefficients.b().a(),
-          formatCoefficient(coefficients.b().b()),
-          formatCoefficient(coefficients.b().c()));
+          coefficients.getR().getA() < 0 ? "" : " ",
+          coefficients.getR().getA(),
+          formatCoefficient(coefficients.getR().getB()),
+          formatCoefficient(coefficients.getR().getC()),
+          coefficients.getG().getA() < 0 ? "" : " ",
+          coefficients.getG().getA(),
+          formatCoefficient(coefficients.getG().getB()),
+          formatCoefficient(coefficients.getG().getC()),
+          coefficients.getB().getA() < 0 ? "" : " ",
+          coefficients.getB().getA(),
+          formatCoefficient(coefficients.getB().getB()),
+          formatCoefficient(coefficients.getB().getC()));
     }
   }
 
@@ -238,7 +239,7 @@ public class ColorAnalyzer {
 
     getCoefficients();
 
-    ImmutableMap.Builder<String, FilamentData> newFilamentData = ImmutableMap.builder();
+    Map<String, FilamentData> newFilamentData = new HashMap<>();
     if (filamentData != null) {
       newFilamentData.putAll(filamentData);
     }
@@ -247,32 +248,29 @@ public class ColorAnalyzer {
       String colorName = filamentColor.getKey();
       RGBColor color = filamentColor.getValue();
 
-      FilamentData.Builder dataBuilder = FilamentData.builder();
-      dataBuilder.color(color);
+      FilamentData data = new FilamentData();
+      data.setColor(color);
       Map<RGBColor, RGBColor> mappings = new HashMap<>();
       if (filamentColorMappings != null) {
         mappings = filamentColorMappings.get(colorName);
       }
-      dataBuilder.mappings(mappings);
+      data.setMappings(mappings);
 
       RGBCoefficients coefficients = RGBCoefficients.ZERO;
       if (filamentCoefficients != null) {
         coefficients = filamentCoefficients.get(colorName);
       }
-      dataBuilder.coefficients(coefficients);
+      data.setCoefficients(coefficients);
 
-      newFilamentData.put(colorName, dataBuilder.build());
+      newFilamentData.put(colorName, data);
     }
 
-    filamentData = newFilamentData.build();
+    filamentData = newFilamentData;
   }
 
-  public static ColorAnalyzer analyze(
+  public void analyze(
       String imagePath, List<String> filamentNames, int numChipRows, int numChipCols)
       throws IOException {
-    ColorAnalyzer analyzer = new ColorAnalyzer();
-    analyzer.analyze(ImageIO.read(new File(imagePath)), filamentNames, numChipRows, numChipCols);
-
-    return analyzer;
+    analyze(ImageIO.read(new File(imagePath)), filamentNames, numChipRows, numChipCols);
   }
 }
