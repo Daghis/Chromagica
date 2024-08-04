@@ -1,7 +1,7 @@
 package net.bluevine.chromagica;
 
 import java.util.Collection;
-import net.bluevine.chromagica.data.RGBColor;
+import net.bluevine.chromagica.model.RGBColor;
 
 public class ColorUtil {
   private ColorUtil() {

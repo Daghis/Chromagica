@@ -9,7 +9,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
-import net.bluevine.chromagica.data.RGBColor;
+import net.bluevine.chromagica.model.RGBColor;
 import org.junit.jupiter.api.Test;
 
 class ColorUtilTest {

@@ -1,4 +1,4 @@
-package net.bluevine.chromagica.data;
+package net.bluevine.chromagica.model;
 
 import com.google.auto.value.AutoValue;
 import java.util.Map;
