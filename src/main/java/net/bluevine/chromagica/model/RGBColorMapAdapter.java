@@ -1,5 +1,7 @@
 package net.bluevine.chromagica.model;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.squareup.moshi.FromJson;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.JsonReader;
@@ -15,8 +17,7 @@ public class RGBColorMapAdapter {
   public void toJson(
       JsonWriter writer, Map<RGBColor, RGBColor> mappings, JsonAdapter<int[]> colorAdapter)
       throws IOException {
-    TreeMap<RGBColor, RGBColor> sortedMap = new TreeMap<>();
-    sortedMap.putAll(mappings);
+    TreeMap<RGBColor, RGBColor> sortedMap = new TreeMap<>(mappings);
 
     writer.beginArray();
     for (Map.Entry<RGBColor, RGBColor> entry : sortedMap.entrySet()) {
@@ -35,8 +36,8 @@ public class RGBColorMapAdapter {
     reader.beginArray();
     while (reader.hasNext()) {
       reader.beginArray();
-      int[] keyRgb = colorAdapter.fromJson(reader);
-      int[] valueRgb = colorAdapter.fromJson(reader);
+      int[] keyRgb = checkNotNull(colorAdapter.fromJson(reader));
+      int[] valueRgb = checkNotNull(colorAdapter.fromJson(reader));
       RGBColor key = new RGBColor(keyRgb[0], keyRgb[1], keyRgb[2]);
       RGBColor value = new RGBColor(valueRgb[0], valueRgb[1], valueRgb[2]);
       mappings.put(key, value);
