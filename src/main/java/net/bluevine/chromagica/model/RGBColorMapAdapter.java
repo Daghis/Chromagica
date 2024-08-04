@@ -8,49 +8,39 @@ import com.squareup.moshi.ToJson;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 public class RGBColorMapAdapter {
   @ToJson
   public void toJson(
-      JsonWriter writer, Map<RGBColor, RGBColor> mappings, JsonAdapter<RGBColor> colorAdapter)
+      JsonWriter writer, Map<RGBColor, RGBColor> mappings, JsonAdapter<int[]> colorAdapter)
       throws IOException {
+    TreeMap<RGBColor, RGBColor> sortedMap = new TreeMap<>();
+    sortedMap.putAll(mappings);
+
     writer.beginArray();
-    for (Map.Entry<RGBColor, RGBColor> entry : mappings.entrySet()) {
-      writer.beginObject();
-      writer.name("key");
-      colorAdapter.toJson(writer, entry.getKey());
-      writer.name("value");
-      colorAdapter.toJson(writer, entry.getValue());
-      writer.endObject();
+    for (Map.Entry<RGBColor, RGBColor> entry : sortedMap.entrySet()) {
+      writer.beginArray();
+      colorAdapter.toJson(writer, entry.getKey().getRgb());
+      colorAdapter.toJson(writer, entry.getValue().getRgb());
+      writer.endArray();
     }
     writer.endArray();
   }
 
   @FromJson
-  public Map<RGBColor, RGBColor> fromJson(JsonReader reader, JsonAdapter<RGBColor> colorAdapter)
+  public Map<RGBColor, RGBColor> fromJson(JsonReader reader, JsonAdapter<int[]> colorAdapter)
       throws IOException {
     Map<RGBColor, RGBColor> mappings = new HashMap<>();
     reader.beginArray();
     while (reader.hasNext()) {
-      reader.beginObject();
-      RGBColor key = null;
-      RGBColor value = null;
-      while (reader.hasNext()) {
-        switch (reader.selectName(JsonReader.Options.of("key", "value"))) {
-          case 0:
-            key = colorAdapter.fromJson(reader);
-            break;
-          case 1:
-            value = colorAdapter.fromJson(reader);
-            break;
-          default:
-            reader.skipName();
-            reader.skipValue();
-            break;
-        }
-      }
+      reader.beginArray();
+      int[] keyRgb = colorAdapter.fromJson(reader);
+      int[] valueRgb = colorAdapter.fromJson(reader);
+      RGBColor key = new RGBColor(keyRgb[0], keyRgb[1], keyRgb[2]);
+      RGBColor value = new RGBColor(valueRgb[0], valueRgb[1], valueRgb[2]);
       mappings.put(key, value);
-      reader.endObject();
+      reader.endArray();
     }
     reader.endArray();
     return mappings;
