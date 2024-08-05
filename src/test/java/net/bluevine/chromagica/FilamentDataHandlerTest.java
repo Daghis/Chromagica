@@ -5,9 +5,12 @@ import static net.bluevine.chromagica.TestData.TEST_FILAMENT_DATA_AS_JSON;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
+import net.bluevine.chromagica.model.FilamentData;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -42,5 +45,26 @@ class FilamentDataHandlerTest {
   }
 
   @Test
-  void readFromFile() {}
+  void readFromFile() throws IOException {
+    Files.writeString(tempDataFile, TEST_FILAMENT_DATA_AS_JSON);
+    Map<String, FilamentData> result = FilamentDataHandler.readFromFile(tempDataFile);
+
+    assertEquals(TEST_FILAMENT_DATA, result);
+  }
+
+  @Test
+  void colorUtil_constructorIsPrivate() throws Exception {
+    Constructor<FilamentDataHandler> constructor =
+        FilamentDataHandler.class.getDeclaredConstructor();
+    assertFalse(constructor.canAccess(null));
+  }
+
+  @Test
+  void colorUtil_constructorException() throws Exception {
+    Constructor<FilamentDataHandler> constructor =
+        FilamentDataHandler.class.getDeclaredConstructor();
+    constructor.setAccessible(true);
+    Exception exception = assertThrows(InvocationTargetException.class, constructor::newInstance);
+    assertInstanceOf(UnsupportedOperationException.class, exception.getCause());
+  }
 }

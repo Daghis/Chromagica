@@ -164,11 +164,9 @@ public class ColorAnalyzer {
     for (Entry<String, RGBColor> addedFilament : filamentColors.entrySet()) {
       String addedColor = addedFilament.getKey();
 
-      Map<RGBColor, RGBColor> mappings = new HashMap<>();
-      Map<RGBColor, RGBColor> existingMappings = filamentColorMappings.get(addedColor);
-      if (existingMappings != null) {
-        mappings.putAll(existingMappings);
-      }
+      Map<RGBColor, RGBColor> existingMappings =
+          filamentColorMappings.getOrDefault(addedColor, new HashMap<>());
+      Map<RGBColor, RGBColor> mappings = new HashMap<>(existingMappings);
 
       WeightedObservedPoints redPoints = new WeightedObservedPoints();
       WeightedObservedPoints greenPoints = new WeightedObservedPoints();
@@ -239,10 +237,7 @@ public class ColorAnalyzer {
 
     getCoefficients();
 
-    Map<String, FilamentData> newFilamentData = new HashMap<>();
-    if (filamentData != null) {
-      newFilamentData.putAll(filamentData);
-    }
+    Map<String, FilamentData> newFilamentData = new HashMap<>(filamentData);
 
     for (Entry<String, RGBColor> filamentColor : filamentColors.entrySet()) {
       String colorName = filamentColor.getKey();
