@@ -1,5 +1,6 @@
 # Chromagica
 
+[![Java CI with Gradle](https://github.com/Daghis/Chromagica/actions/workflows/gradle.yml/badge.svg)](https://github.com/Daghis/Chromagica/actions/workflows/gradle.yml)
 [![codecov](https://codecov.io/gh/Daghis/Chromagica/graph/badge.svg?token=3YC2A4GIE7)](https://codecov.io/gh/Daghis/Chromagica)
 
 Chromagica is an application that collects color data from multiple layers of one color of filament
