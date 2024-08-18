@@ -57,13 +57,17 @@ jacocoTestReport {
 }
 
 test {
+    useJUnitPlatform()
     finalizedBy jacocoTestReport
+}
+
+tasks.withType(Test).configureEach {
+    reports {
+        junitXml.required = true
+        html.required = true
+    }
 }
 
 application {
     mainClass = 'net.bluevine.chromagica.LoadStepWedge'
-}
-
-test {
-    useJUnitPlatform()
 }
