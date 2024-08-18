@@ -14,6 +14,28 @@ the filament database using the `LoadStepWedge` application.
 
 <img alt="8-color step wedge print" width="400" src="examples/8x8-color-sample.png"/>
 
+As an example, here are per-component coefficients for Yellow:
+
+- 🔴 = 0.00044𝒓² + 0.39639𝒓 + 123.71899
+- 🟢 = 0.00041𝒈² + 0.29920𝒈 + 125.12055
+- 🔵 = -0.00045𝒃² + 0.20879𝒃 + 76.19541
+
+This means that if you have a base color of Cyan \[RGB(20, 98, 197)] and add one layer of
+Yellow, we can compute the expected red, green, and blue component values of the resulting color
+as:
+
+- 🔴 = 132
+  (0.00044(20²) + 0.39639(20) + 123.71899)
+- 🟢 = 158
+  (0.00041(98²) + 0.29920(98) + 125.12055)
+- 🔵 = 100
+  (-0.00045(197²) + 0.20879(197) + 76.19541)
+
+What this means symbolically:
+
+- applyYelllow(![Cyan swatch](examples/Cyan-Swatch.png))
+  = ![Cyan + Yellow swatch](examples/Cyan-Yellow-Swatch.png)
+
 ## Project Status
 
 ### Code Coverage Sunburst
