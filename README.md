@@ -8,9 +8,9 @@ determines quadratic coefficients that can be used to predict how filament color
 any underlying color. These coefficients are stored in a central "filament database" that
 contains all filaments loaded.
 
-The color data is collected from [step wedge test prints](https://makerworld.
-com/en/models/508600) where you print _n_ colors with _i_ 0.08mm layers. An image of a test
-print is then loaded into the filament database using the `LoadStepWedge` application.
+The color data is collected from [step wedge test prints](https://makerworld.com/en/models/508600)
+where you print _n_ colors with _i_ 0.08mm layers. An image of a test print is then loaded into
+the filament database using the `LoadStepWedge` application.
 
 <img alt="8-color step wedge print" width="400" src="examples/8x8-color-sample.png"/>
 
