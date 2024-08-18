@@ -36,6 +36,7 @@ dependencies {
 
     implementation 'me.tongfei:progressbar:0.10.1'
 
+    implementation 'org.apache.commons:commons-imaging:1.0.0-alpha5'
     implementation 'org.apache.commons:commons-lang3:3.15.0'
     implementation 'org.apache.commons:commons-math3:3.6'
 
@@ -46,6 +47,17 @@ dependencies {
 
     // Including the OpenCV jar provided by Homebrew
     implementation files('/opt/homebrew/opt/opencv/share/java/opencv4/opencv-480.jar')
+}
+
+jacocoTestReport {
+    reports {
+        xml.required = true
+        html.required = true
+    }
+}
+
+test {
+    finalizedBy jacocoTestReport
 }
 
 application {
