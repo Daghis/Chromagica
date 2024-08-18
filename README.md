@@ -3,6 +3,8 @@
 [![Java CI with Gradle](https://github.com/Daghis/Chromagica/actions/workflows/gradle.yml/badge.svg)](https://github.com/Daghis/Chromagica/actions/workflows/gradle.yml)
 [![codecov](https://codecov.io/gh/Daghis/Chromagica/graph/badge.svg?token=3YC2A4GIE7)](https://codecov.io/gh/Daghis/Chromagica)
 
+---
+
 Chromagica is an application that collects color data from multiple layers of one color of filament
 on top of another. Using the points in 3D colorspace in a quadratic regression, the algorithm
 determines quadratic coefficients that can be used to predict how filament colors interact with
@@ -34,8 +36,10 @@ as:
 
 What this means symbolically:
 
-- applyYelllow(![Cyan swatch](examples/Cyan-Swatch.png))
+- ![Cyan swatch](examples/Cyan-Swatch.png).applyLayer(![Yellow swatch](examples/Yellow-Swatch.png))
   = ![Cyan + Yellow swatch](examples/Cyan-Yellow-Swatch.png)
+
+---
 
 ## Project Status
 

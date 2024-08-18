@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import net.bluevine.chromagica.model.FilamentData;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
@@ -52,12 +53,25 @@ public class LoadStepWedge implements Runnable {
       defaultValue = "filament_database.json")
   private Path databasePath;
 
-  public static void main(String[] args) {
-    int exitCode = new CommandLine(new LoadStepWedge()).execute(args);
-    System.exit(exitCode);
+  @Option(
+      names = {"-c", "--chip-cols"},
+      description = "Number of columns of chips per color block",
+      defaultValue = "3")
+  private int chipCols;
+
+  @Option(
+      names = {"-r", "--chip-rows"},
+      description = "Number of rows of chips per color block",
+      defaultValue = "3")
+  private int chipRows;
+
+  private static Consumer<Integer> exitFunction = System::exit;
+
+  static void setExitFunction(Consumer<Integer> exitFunction) {
+    LoadStepWedge.exitFunction = exitFunction;
   }
 
-  private void validateArguments() {
+  void validateArguments() {
     int numFilamentNames = filamentNames.size();
     if (numFilamentNames != numberOfColors) {
       String quantity =
@@ -65,21 +79,14 @@ public class LoadStepWedge implements Runnable {
       throw new ParameterException(
           spec.commandLine(),
           String.format(
-              "You must specify %d filament names; %s provided.", numberOfColors, quantity));
+              "You must specify %d filament name%s; %s provided.",
+              numberOfColors, numberOfColors != 1 ? "s" : "", quantity));
     }
   }
 
-  @Override
-  public void run() {
-    validateArguments();
-
-    // Process the image file
-    System.out.println("Processing image file: " + imagePath);
-    System.out.println("Number of colors: " + numberOfColors);
-    System.out.println("Colors: " + filamentNames);
-
-    // Add your processing logic here
+  static Map<String, FilamentData> loadFilamentData(Path databasePath) {
     Map<String, FilamentData> filamentData;
+
     try {
       filamentData = FilamentDataHandler.readFromFile(databasePath);
     } catch (NoSuchFileException e) {
@@ -88,9 +95,22 @@ public class LoadStepWedge implements Runnable {
       throw new RuntimeException(e);
     }
 
+    return filamentData;
+  }
+
+  @Override
+  public void run() {
+    validateArguments();
+
+    System.out.println("Processing image file: " + imagePath);
+    System.out.println("Number of colors: " + numberOfColors);
+    System.out.println("Colors: " + filamentNames);
+
+    Map<String, FilamentData> filamentData = loadFilamentData(databasePath);
+
     ColorAnalyzer analyzer = new ColorAnalyzer(filamentData);
     try {
-      analyzer.analyze(imagePath.toString(), filamentNames, 16, 16);
+      analyzer.analyze(imagePath.toString(), filamentNames, chipCols, chipRows);
       FilamentDataHandler.writeToFile(analyzer.filamentData, databasePath);
     } catch (IOException e) {
       throw new RuntimeException(e);
@@ -98,5 +118,10 @@ public class LoadStepWedge implements Runnable {
 
     // Example output
     System.out.println("Processing complete.");
+  }
+
+  public static void main(String[] args) {
+    int exitCode = new CommandLine(new LoadStepWedge()).execute(args);
+    exitFunction.accept(exitCode);
   }
 }
