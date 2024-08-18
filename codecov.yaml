@@ -4,3 +4,8 @@ coverage:
       default:
         paths:
           - build/reports/jacoco/test/jacocoTestReport.xml
+
+test:
+  report:
+    paths:
+      - build/test-results/test/*.xml
