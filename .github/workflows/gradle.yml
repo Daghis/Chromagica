@@ -38,12 +38,17 @@ jobs:
 
     - name: Upload coverage reports to Codecov
       uses: codecov/codecov-action@v4.0.1
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        version: v0.6.0
 
     - name: Upload test results to Codecov
       if: ${{ !cancelled() }}
       uses: codecov/test-results-action@v1
       with:
+        token: ${{ secrets.CODECOV_TOKEN }}
         files: build/test-results/test/*.xml
+        version: v0.6.0
 
   dependency-submission:
 
