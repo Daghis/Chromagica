@@ -8,7 +8,7 @@ import java.io.IOException;
 import org.junit.jupiter.api.Test;
 
 class RGBCoefficientsAdapterTest {
-  RGBCoefficientsAdapter coefficientsAdapter = new RGBCoefficientsAdapter();
+  private final RGBCoefficientsAdapter coefficientsAdapter = new RGBCoefficientsAdapter();
 
   @Test
   void toJson() {
