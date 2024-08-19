@@ -23,6 +23,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
 import net.bluevine.chromagica.model.FilamentData;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
@@ -131,16 +132,17 @@ public class LoadStepWedgeTest {
 
   @Test
   public void run_processSimpleImage() throws IOException {
+    String randomName = RandomStringUtils.randomAlphanumeric(10);
     Path tempFilamentDatabase = Files.createTempFile("test_filament_database", ".json");
     Files.deleteIfExists(tempFilamentDatabase);
 
     int status =
         command.execute(
-            "-d", tempFilamentDatabase.toString(), "-n", "1", ORANGE_1x1_IMAGE_PATH, "Orange");
+            "-d", tempFilamentDatabase.toString(), "-n", "1", ORANGE_1x1_IMAGE_PATH, randomName);
     assertEquals(ExitCode.OK, status);
 
     String databaseResult = Files.readString(tempFilamentDatabase);
-    assertThat(databaseResult, containsString("\"Orange\": {"));
+    assertThat(databaseResult, containsString(String.format("\"%s\": {", randomName)));
 
     // Cleanup
     tempFilamentDatabase.toFile().deleteOnExit();
