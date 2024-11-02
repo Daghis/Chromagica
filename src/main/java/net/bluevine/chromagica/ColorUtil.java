@@ -1,92 +1,102 @@
 package net.bluevine.chromagica;
 
+import static java.util.Comparator.comparingInt;
+import static net.bluevine.chromagica.MathUtil.applyQuadraticCoefficients;
+
+import com.google.common.collect.HashMultiset;
+import com.google.common.collect.Multiset;
+import com.google.common.collect.Multiset.Entry;
 import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
+import lombok.Value;
+import net.bluevine.chromagica.model.FilamentData;
+import net.bluevine.chromagica.model.RGBCoefficients;
 import net.bluevine.chromagica.model.RGBColor;
+import org.apache.commons.math3.ml.clustering.CentroidCluster;
+import org.apache.commons.math3.ml.clustering.DoublePoint;
+import org.apache.commons.math3.ml.clustering.KMeansPlusPlusClusterer;
 
 public class ColorUtil {
+  private static final int MAX_CLUSTERER_ITERATIONS = 100;
+
   private ColorUtil() {
     throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
   }
 
-  public static double calculateDifference(RGBColor color1, RGBColor color2) {
-    double[] lab1 = rgbToLab(color1);
-    double[] lab2 = rgbToLab(color2);
+  public static Multiset<RGBColor> getDominantColors(Collection<RGBColor> colors, int count) {
+    Multiset<RGBColor> dominantColors = HashMultiset.create();
 
-    return euclideanDistance(lab1, lab2);
-  }
-
-  public static RGBColor getAverageColor(Collection<RGBColor> colors) {
     if (colors == null || colors.isEmpty()) {
-      return new RGBColor(0, 0, 0);
+      return dominantColors;
     }
 
-    int sumRed = 0;
-    int sumGreen = 0;
-    int sumBlue = 0;
-    int count = colors.size();
+    List<DoublePoint> points =
+        colors.stream()
+            .map(color -> new DoublePoint(new double[] {color.getR(), color.getG(), color.getB()}))
+            .collect(Collectors.toList());
 
-    for (RGBColor color : colors) {
-      sumRed += color.getR();
-      sumGreen += color.getG();
-      sumBlue += color.getB();
+    KMeansPlusPlusClusterer<DoublePoint> clusterer =
+        new KMeansPlusPlusClusterer<>(count, MAX_CLUSTERER_ITERATIONS);
+    List<CentroidCluster<DoublePoint>> clusters = clusterer.cluster(points);
+
+    clusters.forEach(
+        cluster -> {
+          double[] centroid = cluster.getCenter().getPoint();
+          RGBColor dominantColor = new RGBColor(centroid[0], centroid[1], centroid[2]);
+          dominantColors.add(dominantColor, cluster.getPoints().size());
+        });
+
+    return dominantColors;
+  }
+
+  public static RGBColor getDominantColor(Collection<RGBColor> colors) {
+    return getDominantColors(colors, 2).entrySet().stream()
+        .max(comparingInt(Entry::getCount))
+        .map(Entry::getElement)
+        .orElse(new RGBColor(0, 0, 0));
+  }
+
+  @Value
+  private static class ColorNode {
+    RGBColor color;
+    ConcurrentHashMap<String, ColorNode> children = new ConcurrentHashMap<>();
+  }
+
+  private static final ConcurrentHashMap<String, ColorNode> root = new ConcurrentHashMap<>();
+
+  public static RGBColor getColorForSequence(
+      List<String> sequence, Map<String, FilamentData> filamentData, String baseFilament) {
+    // Start with the baseFilament.
+    ColorNode currentNode =
+        root.computeIfAbsent(
+            baseFilament, x -> new ColorNode(filamentData.get(baseFilament).getColor()));
+
+    RGBColor color = currentNode.getColor();
+    for (String filament : sequence) {
+      ColorNode child = currentNode.getChildren().get(filament);
+      if (child != null) {
+        color = child.getColor();
+        currentNode = child;
+        continue;
+      }
+
+      // "Add" filament to color.
+      RGBCoefficients coefficients = filamentData.get(filament).getCoefficients();
+      color =
+          new RGBColor(
+              applyQuadraticCoefficients(color.getR(), coefficients.getR()),
+              applyQuadraticCoefficients(color.getG(), coefficients.getG()),
+              applyQuadraticCoefficients(color.getB(), coefficients.getB()));
+      child = new ColorNode(color);
+
+      currentNode.getChildren().put(filament, child);
+
+      currentNode = child;
     }
 
-    int averageRed = Math.round((float) sumRed / count);
-    int averageGreen = Math.round((float) sumGreen / count);
-    int averageBlue = Math.round((float) sumBlue / count);
-
-    return new RGBColor(averageRed, averageGreen, averageBlue);
-  }
-
-  private static double[] rgbToLab(RGBColor color) {
-    float[] rgb = new float[] {color.getR() / 255f, color.getG() / 255f, color.getB() / 255f};
-    double[] xyz = rgbToXyz(rgb[0], rgb[1], rgb[2]);
-    return xyzToLab(xyz[0], xyz[1], xyz[2]);
-  }
-
-  private static double[] rgbToXyz(double r, double g, double b) {
-    // Convert RGB to XYZ
-    r = pivotRgb(r);
-    g = pivotRgb(g);
-    b = pivotRgb(b);
-
-    double x = r * 0.4124564 + g * 0.3575761 + b * 0.1804375;
-    double y = r * 0.2126729 + g * 0.7151522 + b * 0.0721750;
-    double z = r * 0.0193339 + g * 0.1191920 + b * 0.9503041;
-
-    return new double[] {x, y, z};
-  }
-
-  private static double pivotRgb(double n) {
-    return (n > 0.04045) ? Math.pow((n + 0.055) / 1.055, 2.4) : n / 12.92;
-  }
-
-  private static double[] xyzToLab(double x, double y, double z) {
-    // Convert XYZ to LAB
-    x /= 95.047;
-    y /= 100.000;
-    z /= 108.883;
-
-    x = pivotXyz(x);
-    y = pivotXyz(y);
-    z = pivotXyz(z);
-
-    double l = (116 * y) - 16;
-    double a = 500 * (x - y);
-    double b = 200 * (y - z);
-
-    return new double[] {l, a, b};
-  }
-
-  private static double pivotXyz(double n) {
-    return (n > 0.008856) ? Math.pow(n, 1.0 / 3.0) : (7.787 * n) + (16.0 / 116.0);
-  }
-
-  private static double euclideanDistance(double[] lab1, double[] lab2) {
-    double deltaL = lab1[0] - lab2[0];
-    double deltaA = lab1[1] - lab2[1];
-    double deltaB = lab1[2] - lab2[2];
-
-    return Math.sqrt(deltaL * deltaL + deltaA * deltaA + deltaB * deltaB);
+    return color;
   }
 }
