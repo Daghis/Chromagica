@@ -40,6 +40,11 @@ public class FilamentDataHandler {
     Type type = Types.newParameterizedType(Map.class, String.class, FilamentData.class);
     JsonAdapter<Map<String, FilamentData>> adapter = MOSHI.adapter(type);
 
-    return adapter.fromJson(Files.readString(path));
+    Map<String, FilamentData> caseInsensitiveMap = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+    Map<String, FilamentData> filamentDataMap = adapter.fromJson(Files.readString(path));
+    if (filamentDataMap != null) {
+      caseInsensitiveMap.putAll(filamentDataMap);
+    }
+    return caseInsensitiveMap;
   }
 }
