@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
@@ -114,6 +115,7 @@ class FilamentStackerTest {
     try (MockedStatic<CacheBuilder> mockedCacheBuilder = mockStatic(CacheBuilder.class)) {
       Cache<List<String>, RGBColor> mockedCache = mock(Cache.class);
       CacheBuilder<List<String>, RGBColor> cacheBuilder = mock(CacheBuilder.class);
+      when(cacheBuilder.maximumSize(anyLong())).thenReturn(cacheBuilder);
       when(cacheBuilder.build()).thenReturn(mockedCache);
       mockedCacheBuilder.when(CacheBuilder::newBuilder).thenReturn(cacheBuilder);
 
