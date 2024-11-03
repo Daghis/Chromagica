@@ -26,39 +26,6 @@ public class ColorUtil {
     throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
   }
 
-  public static Multiset<RGBColor> getDominantColors(Collection<RGBColor> colors, int count) {
-    Multiset<RGBColor> dominantColors = HashMultiset.create();
-
-    if (colors == null || colors.isEmpty()) {
-      return dominantColors;
-    }
-
-    List<DoublePoint> points =
-        colors.stream()
-            .map(color -> new DoublePoint(new double[] {color.getR(), color.getG(), color.getB()}))
-            .collect(Collectors.toList());
-
-    KMeansPlusPlusClusterer<DoublePoint> clusterer =
-        new KMeansPlusPlusClusterer<>(count, MAX_CLUSTERER_ITERATIONS);
-    List<CentroidCluster<DoublePoint>> clusters = clusterer.cluster(points);
-
-    clusters.forEach(
-        cluster -> {
-          double[] centroid = cluster.getCenter().getPoint();
-          RGBColor dominantColor = new RGBColor(centroid[0], centroid[1], centroid[2]);
-          dominantColors.add(dominantColor, cluster.getPoints().size());
-        });
-
-    return dominantColors;
-  }
-
-  public static RGBColor getDominantColor(Collection<RGBColor> colors) {
-    return getDominantColors(colors, 2).entrySet().stream()
-        .max(comparingInt(Entry::getCount))
-        .map(Entry::getElement)
-        .orElse(new RGBColor(0, 0, 0));
-  }
-
   @Value
   private static class ColorNode {
     RGBColor color;
@@ -98,5 +65,38 @@ public class ColorUtil {
     }
 
     return color;
+  }
+
+  public static Multiset<RGBColor> getDominantColors(Collection<RGBColor> colors, int count) {
+    Multiset<RGBColor> dominantColors = HashMultiset.create();
+
+    if (colors == null || colors.isEmpty()) {
+      return dominantColors;
+    }
+
+    List<DoublePoint> points =
+        colors.stream()
+            .map(color -> new DoublePoint(new double[] {color.getR(), color.getG(), color.getB()}))
+            .collect(Collectors.toList());
+
+    KMeansPlusPlusClusterer<DoublePoint> clusterer =
+        new KMeansPlusPlusClusterer<>(count, MAX_CLUSTERER_ITERATIONS);
+    List<CentroidCluster<DoublePoint>> clusters = clusterer.cluster(points);
+
+    clusters.forEach(
+        cluster -> {
+          double[] centroid = cluster.getCenter().getPoint();
+          RGBColor dominantColor = new RGBColor(centroid[0], centroid[1], centroid[2]);
+          dominantColors.add(dominantColor, cluster.getPoints().size());
+        });
+
+    return dominantColors;
+  }
+
+  public static RGBColor getDominantColor(Collection<RGBColor> colors) {
+    return getDominantColors(colors, 2).entrySet().stream()
+        .max(comparingInt(Entry::getCount))
+        .map(Entry::getElement)
+        .orElse(new RGBColor(0, 0, 0));
   }
 }

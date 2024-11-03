@@ -1,7 +1,9 @@
 package net.bluevine.chromagica;
 
+import static java.util.Collections.emptyMap;
 import static java.util.Objects.requireNonNull;
 
+import com.google.common.collect.ImmutableMap;
 import java.nio.file.Path;
 import java.util.Map;
 import java.util.Set;
@@ -199,4 +201,35 @@ public class TestData {
     ]
   }
 }""";
+
+  public static final RGBColor BLUE_COLOR = new RGBColor(7, 36, 153);
+  public static final RGBCoefficients BLUE_COEFFICIENTS =
+      new RGBCoefficients(
+          new double[] {4.480981432791474, 0.4443952684960717, -6.000013383278259E-4},
+          new double[] {24.75142700938747, 0.35721514086022566, 4.944319721599738E-4},
+          new double[] {20.889749735873615, 0.9464429696439061, -5.933063972022456E-4});
+  public static final FilamentData BLUE_FILAMENT_DATA =
+      new FilamentData(BLUE_COLOR, BLUE_COEFFICIENTS, emptyMap());
+
+  public static final RGBColor CYAN_COLOR = new RGBColor(18, 94, 195);
+  public static final RGBCoefficients CYAN_COEFFICIENTS =
+      new RGBCoefficients(
+          new double[] {10.104933275172417, 0.5606841631632997, -9.996605964241558E-4},
+          new double[] {45.47346601829285, 0.5641957131366364, -1.5870963339774738E-4},
+          new double[] {50.81003367840157, 0.8225173880459974, -4.452842482286347E-4});
+  public static final FilamentData CYAN_FILAMENT_DATA =
+      new FilamentData(CYAN_COLOR, CYAN_COEFFICIENTS, emptyMap());
+
+  public static final RGBColor WHITE_COLOR = new RGBColor(254, 254, 254);
+  public static final RGBCoefficients WHITE_COEFFICIENTS =
+      new RGBCoefficients(
+          new double[] {64.88128463300333, 0.7721479787432053, -1.4653425210567843E-4},
+          new double[] {62.17763968106627, 0.8971743277462471, -6.616349721127205E-4},
+          new double[] {60.3418795814688, 0.9280928848575695, -7.244634245743158E-4});
+  public static final FilamentData WHITE_FILAMENT_DATA =
+      new FilamentData(WHITE_COLOR, WHITE_COEFFICIENTS, emptyMap());
+
+  public static final Map<String, FilamentData> TEST_FILAMENT_DATA_MAP =
+      ImmutableMap.of(
+          "Blue", BLUE_FILAMENT_DATA, "Cyan", CYAN_FILAMENT_DATA, "White", WHITE_FILAMENT_DATA);
 }

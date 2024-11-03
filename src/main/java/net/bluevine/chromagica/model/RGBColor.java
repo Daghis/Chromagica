@@ -94,6 +94,6 @@ public class RGBColor implements Comparable<RGBColor> {
   @Override
   public String toString() {
     return String.format(
-        "RGBColor(rgb=#%06x, lab={L=%.2f, a=%.2f, b=%.2f})", getRGB(), lab.l, lab.a, lab.b);
+        "RGBColor(rgb=#%06x [%.2f, %.2f, %.2f])", getRGB() & 0xffffff, getR(), getG(), getB());
   }
 }

@@ -14,12 +14,12 @@ import org.junit.jupiter.api.Test;
 class RGBColorTest {
 
   @Test
-  @DisplayName("toString Basic Test")
+  @DisplayName("toString basic test")
   void testToString() {
-    RGBColor rgbColor = new RGBColor(new Color(255, 255, 255));
+    RGBColor rgbColor = new RGBColor(255, 115.4, 23.14);
 
     String result = rgbColor.toString();
-    assertEquals("RGBColor(rgb=#ffffffff, lab={L=100.00, a=-0.00, b=0.00})", result);
+    assertEquals("RGBColor(rgb=#ff7317 [255.00, 115.40, 23.14])", result);
   }
 
   @Nested
