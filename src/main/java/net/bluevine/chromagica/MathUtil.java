@@ -11,6 +11,10 @@ import java.util.stream.StreamSupport;
 import org.apache.commons.math3.util.Combinations;
 
 public class MathUtil {
+  private MathUtil() {
+    throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
+  }
+
   public static <T> ImmutableSet<ImmutableSet<T>> getAllCombinations(
       Collection<T> items, int countPerSet) {
 
@@ -24,9 +28,7 @@ public class MathUtil {
 
     List<T> itemsList = new ArrayList<>(items);
     return StreamSupport.stream(new Combinations(items.size(), countPerSet).spliterator(), true)
-        .map(
-            indices ->
-                Arrays.stream(indices).mapToObj(itemsList::get).collect(toImmutableSet()))
+        .map(indices -> Arrays.stream(indices).mapToObj(itemsList::get).collect(toImmutableSet()))
         .collect(toImmutableSet());
   }
 
