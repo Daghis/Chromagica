@@ -69,10 +69,6 @@ class FilamentDataHandlerTest {
     assertTrue(result.isEmpty(), "The returned map should be empty when filamentDataMap is null");
   }
 
-  /**
-   * This test ensures that the private constructor of FilamentDataHandler throws an
-   * UnsupportedOperationException when invoked via reflection, thereby achieving full coverage.
-   */
   @Test
   void privateConstructor_shouldThrowUnsupportedOperationException() throws Exception {
     // Obtain the private constructor of FilamentDataHandler
