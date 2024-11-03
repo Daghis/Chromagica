@@ -60,15 +60,9 @@ public class TestData {
   public static final RGBColor BLACK = new RGBColor(0, 0, 0);
   public static final RGBColor GRAY = new RGBColor(128, 128, 128);
   public static final RGBColor LAVENDER = new RGBColor(230, 230, 250);
-  public static final RGBColor SALMON = new RGBColor(250, 128, 114);
   public static final RGBColor TURQUOISE = new RGBColor(64, 224, 208);
-  public static final RGBColor GOLDENROD = new RGBColor(218, 165, 32);
   public static final RGBColor PLUM = new RGBColor(221, 160, 221);
   public static final RGBColor INDIGO = new RGBColor(75, 0, 130);
-  public static final RGBColor MINT = new RGBColor(189, 252, 201);
-  public static final RGBColor CORAL = new RGBColor(255, 127, 80);
-  public static final RGBColor OLIVE = new RGBColor(128, 128, 0);
-  public static final RGBColor TEAL = new RGBColor(0, 128, 128);
 
   public static final Map<String, FilamentData> TEST_FILAMENT_DATA =
       Map.of(
@@ -202,34 +196,42 @@ public class TestData {
   }
 }""";
 
+  public static final String BLUE_NAME = "Blue";
   public static final RGBColor BLUE_COLOR = new RGBColor(7, 36, 153);
   public static final RGBCoefficients BLUE_COEFFICIENTS =
       new RGBCoefficients(
-          new double[] {4.480981432791474, 0.4443952684960717, -6.000013383278259E-4},
-          new double[] {24.75142700938747, 0.35721514086022566, 4.944319721599738E-4},
-          new double[] {20.889749735873615, 0.9464429696439061, -5.933063972022456E-4});
+          new double[] {4.481, 0.444, -6.000E-4},
+          new double[] {24.751, 0.357, 4.944E-4},
+          new double[] {20.89, 0.946, -5.933E-4});
   public static final FilamentData BLUE_FILAMENT_DATA =
       new FilamentData(BLUE_COLOR, BLUE_COEFFICIENTS, emptyMap());
 
+  public static final String CYAN_NAME = "Cyan";
   public static final RGBColor CYAN_COLOR = new RGBColor(18, 94, 195);
   public static final RGBCoefficients CYAN_COEFFICIENTS =
       new RGBCoefficients(
-          new double[] {10.104933275172417, 0.5606841631632997, -9.996605964241558E-4},
-          new double[] {45.47346601829285, 0.5641957131366364, -1.5870963339774738E-4},
-          new double[] {50.81003367840157, 0.8225173880459974, -4.452842482286347E-4});
+          new double[] {10.105, 0.561, -9.997E-4},
+          new double[] {45.473, 0.564, -1.587E-4},
+          new double[] {50.81, 0.823, -4.453E-4});
   public static final FilamentData CYAN_FILAMENT_DATA =
       new FilamentData(CYAN_COLOR, CYAN_COEFFICIENTS, emptyMap());
 
+  public static final String WHITE_NAME = "White";
   public static final RGBColor WHITE_COLOR = new RGBColor(254, 254, 254);
   public static final RGBCoefficients WHITE_COEFFICIENTS =
       new RGBCoefficients(
-          new double[] {64.88128463300333, 0.7721479787432053, -1.4653425210567843E-4},
-          new double[] {62.17763968106627, 0.8971743277462471, -6.616349721127205E-4},
-          new double[] {60.3418795814688, 0.9280928848575695, -7.244634245743158E-4});
+          new double[] {64.881, 0.772, -1.465E-4},
+          new double[] {62.178, 0.897, -6.616E-4},
+          new double[] {60.342, 0.928, -7.245E-4});
   public static final FilamentData WHITE_FILAMENT_DATA =
       new FilamentData(WHITE_COLOR, WHITE_COEFFICIENTS, emptyMap());
 
   public static final Map<String, FilamentData> TEST_FILAMENT_DATA_MAP =
       ImmutableMap.of(
-          "Blue", BLUE_FILAMENT_DATA, "Cyan", CYAN_FILAMENT_DATA, "White", WHITE_FILAMENT_DATA);
+          BLUE_NAME,
+          BLUE_FILAMENT_DATA,
+          CYAN_NAME,
+          CYAN_FILAMENT_DATA,
+          WHITE_NAME,
+          WHITE_FILAMENT_DATA);
 }
