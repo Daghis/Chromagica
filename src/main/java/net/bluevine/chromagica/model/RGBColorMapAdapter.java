@@ -22,8 +22,8 @@ public class RGBColorMapAdapter {
     writer.beginArray();
     for (Map.Entry<RGBColor, RGBColor> entry : sortedMap.entrySet()) {
       writer.beginArray();
-      colorAdapter.toJson(writer, entry.getKey().getRgb());
-      colorAdapter.toJson(writer, entry.getValue().getRgb());
+      colorAdapter.toJson(writer, entry.getKey().getIntArray());
+      colorAdapter.toJson(writer, entry.getValue().getIntArray());
       writer.endArray();
     }
     writer.endArray();

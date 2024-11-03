@@ -7,7 +7,7 @@ import java.io.IOException;
 public class RGBColorAdapter {
   @ToJson
   public int[] toJson(RGBColor color) {
-    return color.getRgb();
+    return new int[] {color.getRInt(), color.getGInt(), color.getBInt()};
   }
 
   @FromJson

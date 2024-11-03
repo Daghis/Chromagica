@@ -1,12 +1,10 @@
 package net.bluevine.chromagica.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Value;
 
-@Data
-@AllArgsConstructor
+@Value
 public class RGBCoefficients {
-  private double[][] rgbCoefficients = new double[3][3];
+  double[][] rgbCoefficients = new double[3][3];
 
   private static final double[] ZERO_COEFFS = new double[] {0, 0, 0};
   public static final RGBCoefficients ZERO =
@@ -16,6 +14,12 @@ public class RGBCoefficients {
     rgbCoefficients[0] = r;
     rgbCoefficients[1] = g;
     rgbCoefficients[2] = b;
+  }
+
+  public RGBCoefficients(double[][] rgbCoefficients) {
+    this.rgbCoefficients[0] = rgbCoefficients[0];
+    this.rgbCoefficients[1] = rgbCoefficients[1];
+    this.rgbCoefficients[2] = rgbCoefficients[2];
   }
 
   public double[] getR() {
