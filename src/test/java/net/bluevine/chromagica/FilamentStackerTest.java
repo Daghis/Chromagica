@@ -74,6 +74,7 @@ class FilamentStackerTest {
     assertEquals(List.of("White", "Blue", "White", "Cyan"), result.getFilamentSequence());
   }
 
+  @SuppressWarnings("rawtypes,unchecked")
   @Test
   void optimizeColorSequence_cacheException() throws Exception {
     try (MockedStatic<CacheBuilder> mockedCacheBuilder = mockStatic(CacheBuilder.class)) {
