@@ -1,1 +1,3 @@
 rootProject.name = 'Chromagica'
+
+include 'common', 'imageto3dprint', 'loadstepwedge'

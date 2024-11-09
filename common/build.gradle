@@ -1,0 +1,57 @@
+plugins {
+    id 'java'
+    id 'jacoco'
+    id 'idea'
+}
+
+group = 'net.bluevine'
+version = '0.0'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compileOnly 'org.projectlombok:lombok:1.18.34'
+    annotationProcessor 'org.projectlombok:lombok:1.18.34'
+
+    implementation 'com.squareup.moshi:moshi:1.15.1'
+    implementation 'com.squareup.moshi:moshi-adapters:1.15.1'
+
+    implementation 'com.google.guava:guava:33.2.1-jre'
+
+    implementation 'org.apache.commons:commons-imaging:1.0.0-alpha5'
+    implementation 'org.apache.commons:commons-math3:3.6'
+
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.3'
+}
+
+jacocoTestReport {
+    reports {
+        xml.required = true
+        html.required = true
+    }
+}
+
+test {
+    useJUnitPlatform()
+    finalizedBy jacocoTestReport
+}
+
+tasks.withType(Test).configureEach {
+    reports {
+        junitXml.required = true
+        html.required = true
+    }
+}
+
+idea {
+    module {
+        downloadJavadoc = true
+        downloadSources = true
+    }
+}
