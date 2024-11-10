@@ -1,7 +1,7 @@
-package net.bluevine.chromagica.loadstepwedge.common;
+package net.bluevine.chromagica.common;
 
-import static net.bluevine.chromagica.loadstepwedge.common.TestData.TEST_FILAMENT_DATA;
-import static net.bluevine.chromagica.loadstepwedge.common.TestData.TEST_FILAMENT_DATA_AS_JSON;
+import static net.bluevine.chromagica.common.TestData.TEST_FILAMENT_DATA;
+import static net.bluevine.chromagica.common.TestData.TEST_FILAMENT_DATA_AS_JSON;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
@@ -10,7 +10,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
-import net.bluevine.chromagica.common.FilamentDataHandler;
 import net.bluevine.chromagica.common.model.FilamentData;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

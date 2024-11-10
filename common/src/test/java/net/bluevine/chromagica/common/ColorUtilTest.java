@@ -1,9 +1,9 @@
-package net.bluevine.chromagica.loadstepwedge.common;
+package net.bluevine.chromagica.common;
 
-import static net.bluevine.chromagica.loadstepwedge.common.TestData.BLUE_COLOR;
-import static net.bluevine.chromagica.loadstepwedge.common.TestData.CYAN_COLOR;
-import static net.bluevine.chromagica.loadstepwedge.common.TestData.TEST_FILAMENT_DATA_MAP;
-import static net.bluevine.chromagica.loadstepwedge.common.TestData.WHITE_COLOR;
+import static net.bluevine.chromagica.common.TestData.BLUE_COLOR;
+import static net.bluevine.chromagica.common.TestData.CYAN_COLOR;
+import static net.bluevine.chromagica.common.TestData.TEST_FILAMENT_DATA_MAP;
+import static net.bluevine.chromagica.common.TestData.WHITE_COLOR;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -17,7 +17,6 @@ import com.google.common.collect.Multiset;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
-import net.bluevine.chromagica.common.ColorUtil;
 import net.bluevine.chromagica.common.model.RGBColor;
 import org.junit.jupiter.api.Test;
 

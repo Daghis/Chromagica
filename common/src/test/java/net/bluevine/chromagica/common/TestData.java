@@ -1,4 +1,4 @@
-package net.bluevine.chromagica.loadstepwedge.common;
+package net.bluevine.chromagica.common;
 
 import static java.util.Collections.emptyMap;
 
