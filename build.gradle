@@ -38,6 +38,7 @@ distributions {
         }
     }
 }
+
 // Prevent duplicate files in `lib`
 tasks.named('distZip') {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE

@@ -78,10 +78,6 @@ tasks.distZip {
     archiveVersion.set(version) // Dynamically apply version
 }
 
-tasks.installDist {
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-}
-
 idea {
     module {
         downloadJavadoc = true
