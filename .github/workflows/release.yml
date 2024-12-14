@@ -22,7 +22,7 @@ jobs:
       - name: Build Distributions
         run: |
           set -e
-          ./gradlew distZip
+          ./gradlew distTar distZip
 
       - name: Get Project Version
         id: version
