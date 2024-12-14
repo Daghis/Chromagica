@@ -3,7 +3,7 @@ name: Build Release
 on:
   push:
     tags:
-      - 'v*.*.*'
+      - '[0-9]+\.[0-9]+\.[0-9]+'
 
 jobs:
   build:
@@ -24,6 +24,10 @@ jobs:
 
       - name: Run distZip
         run: ./gradlew distZip
+
+      - name: Get Project Version
+        id: version
+        run: echo "VERSION=$(./gradlew properties -q | grep '^version:' | awk '{print $2}')" >> $GITHUB_ENV
 
   release:
     needs: build
@@ -48,14 +52,14 @@ jobs:
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: build/distributions/app.tar
-          asset_name: app.tar
+          asset_path: build/distributions/Chromagica-${{ env.VERSION }}.tar
+          asset_name: Chromagica-${{ env.VERSION }}.tar
           asset_content_type: application/x-tar
 
       - name: Upload .zip Asset
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: build/distributions/app.zip
-          asset_name: app.zip
+          asset_path: build/distributions/Chromagica-${{ env.VERSION }}.zip
+          asset_name: Chromagica-${{ env.VERSION }}.zip
           asset_content_type: application/zip

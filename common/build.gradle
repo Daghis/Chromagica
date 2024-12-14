@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'net.bluevine'
-version = '0.0'
+version = '0.5.0'
 
 java {
     sourceCompatibility = JavaVersion.VERSION_17
