@@ -13,6 +13,14 @@ def versionFromGit() {
 
 version = versionFromGit()
 
+tasks.named('distZip') {
+    dependsOn(':imageto3dprint:installDist', ':loadstepwedge:installDist')
+}
+
+tasks.named('distTar') {
+    dependsOn(':imageto3dprint:installDist', ':loadstepwedge:installDist')
+}
+
 tasks.register('printVersion') {
     doLast {
         println project.version

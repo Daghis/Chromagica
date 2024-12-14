@@ -60,6 +60,18 @@ application {
     mainClass = 'net.bluevine.chromagica.imageto3dprint.ImageTo3dPrint'
 }
 
+distributions {
+    main {
+        contents {
+            duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+            into('lib') {
+                from configurations.runtimeClasspath
+                from tasks.jar
+            }
+        }
+    }
+}
+
 tasks.jar {
     manifest {
         attributes 'Main-Class': application.mainClass.get()

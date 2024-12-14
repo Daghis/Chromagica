@@ -48,6 +48,7 @@ dependencies {
 distributions {
     main {
         contents {
+            duplicatesStrategy = DuplicatesStrategy.EXCLUDE
             into('lib') {
                 from configurations.runtimeClasspath
                 from tasks.jar
