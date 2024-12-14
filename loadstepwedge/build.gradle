@@ -9,7 +9,6 @@ plugins {
 }
 
 group = 'net.bluevine'
-version = '0.5.0'
 
 java {
     sourceCompatibility = JavaVersion.VERSION_17
@@ -88,9 +87,17 @@ tasks.jar {
 
 tasks.distTar {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    archiveBaseName.set('Chromagica')
+    archiveVersion.set(version) // Dynamically apply version
 }
 
 tasks.distZip {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    archiveBaseName.set('Chromagica')
+    archiveVersion.set(version) // Dynamically apply version
+}
+
+tasks.installDist {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 

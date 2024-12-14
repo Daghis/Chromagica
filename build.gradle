@@ -1,3 +1,7 @@
+plugins {
+    id 'distribution'
+}
+
 def versionFromGit() {
     def stdout = new ByteArrayOutputStream()
     exec {
@@ -8,3 +12,33 @@ def versionFromGit() {
 }
 
 version = versionFromGit()
+
+tasks.register('printVersion') {
+    doLast {
+        println project.version
+    }
+}
+
+allprojects {
+    version = rootProject.version
+}
+
+// Configure the root distribution to include subprojects' outputs
+distributions {
+    main {
+        contents {
+            into('bin') {
+                from { project(':imageto3dprint').tasks.named('installDist').get().destinationDir.toPath().resolve('bin').toFile() }
+                from { project(':loadstepwedge').tasks.named('installDist').get().destinationDir.toPath().resolve('bin').toFile() }
+            }
+            into('lib') {
+                from { project(':imageto3dprint').tasks.named('installDist').get().destinationDir.toPath().resolve('lib').toFile() }
+                from { project(':loadstepwedge').tasks.named('installDist').get().destinationDir.toPath().resolve('lib').toFile() }
+            }
+        }
+    }
+}
+// Prevent duplicate files in `lib`
+tasks.named('distZip') {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}

@@ -19,15 +19,24 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Run distTar
-        run: ./gradlew distTar
-
-      - name: Run distZip
-        run: ./gradlew distZip
+      - name: Build Distributions
+        run: |
+          set -e
+          ./gradlew distTar distZip
 
       - name: Get Project Version
         id: version
-        run: echo "VERSION=$(./gradlew properties -q | grep '^version:' | awk '{print $2}')" >> $GITHUB_ENV
+        run: echo "VERSION=$(./gradlew printVersion -q)" >> $GITHUB_ENV
+
+      - name: Debug Project Version
+        run: |
+          echo "VERSION: ${{ env.VERSION }}"
+
+      - name: Verify Distributions
+        run: |
+          ls -l build/distributions
+          test -f build/distributions/Chromagica-${{ env.VERSION }}.tar
+          test -f build/distributions/Chromagica-${{ env.VERSION }}.zip
 
   release:
     needs: build
@@ -49,7 +58,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload .tar Asset
-        uses: actions/upload-release-asset@v1
+        uses: actions/upload-release-asset@v1.0.2
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: build/distributions/Chromagica-${{ env.VERSION }}.tar
@@ -57,7 +66,7 @@ jobs:
           asset_content_type: application/x-tar
 
       - name: Upload .zip Asset
-        uses: actions/upload-release-asset@v1
+        uses: actions/upload-release-asset@v1.0.2
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: build/distributions/Chromagica-${{ env.VERSION }}.zip
