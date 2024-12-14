@@ -8,6 +8,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      VERSION: ${{ steps.version.outputs.VERSION }}
 
     steps:
       - name: Checkout code
@@ -26,17 +28,13 @@ jobs:
 
       - name: Get Project Version
         id: version
-        run: echo "VERSION=$(./gradlew printVersion -q)" >> $GITHUB_ENV
+        run: echo "::set-output name=VERSION::$(./gradlew printVersion -q)"
 
-      - name: Debug Project Version
-        run: |
-          echo "VERSION: ${{ env.VERSION }}"
-
-      - name: Verify Distributions
-        run: |
-          ls -l build/distributions
-          test -f build/distributions/Chromagica-${{ env.VERSION }}.tar
-          test -f build/distributions/Chromagica-${{ env.VERSION }}.zip
+      - name: Upload distributions as artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: distributions
+          path: build/distributions/*
 
   release:
     needs: build
@@ -44,6 +42,12 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+
+      - name: Download Dist Artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: distributions
+          path: build/distributions
 
       - name: Create GitHub Release
         id: create_release
@@ -61,14 +65,14 @@ jobs:
         uses: actions/upload-release-asset@v1.0.2
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: build/distributions/Chromagica-${{ env.VERSION }}.tar
-          asset_name: Chromagica-${{ env.VERSION }}.tar
+          asset_path: build/distributions/Chromagica-${{ needs.build.outputs.VERSION }}.tar
+          asset_name: Chromagica-${{ needs.build.outputs.VERSION }}.tar
           asset_content_type: application/x-tar
 
       - name: Upload .zip Asset
         uses: actions/upload-release-asset@v1.0.2
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: build/distributions/Chromagica-${{ env.VERSION }}.zip
-          asset_name: Chromagica-${{ env.VERSION }}.zip
+          asset_path: build/distributions/Chromagica-${{ needs.build.outputs.VERSION }}.zip
+          asset_name: Chromagica-${{ needs.build.outputs.VERSION }}.zip
           asset_content_type: application/zip
