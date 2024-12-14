@@ -48,6 +48,9 @@ distributions {
 }
 
 // Prevent duplicate files in `lib`
+tasks.named('distTar') {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
 tasks.named('distZip') {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
