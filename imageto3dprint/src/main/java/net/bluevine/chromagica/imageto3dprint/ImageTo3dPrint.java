@@ -26,6 +26,7 @@ import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
 import lombok.Value;
 import me.tongfei.progressbar.ProgressBar;
+import net.bluevine.chromagica.Version;
 import net.bluevine.chromagica.common.FilamentDataHandler;
 import net.bluevine.chromagica.common.model.FilamentData;
 import net.bluevine.chromagica.common.model.RGBColor;
@@ -41,7 +42,7 @@ import picocli.CommandLine.Spec;
 @Command(
     name = "ImageTo3dPrint",
     mixinStandardHelpOptions = true,
-    version = "1.0",
+    version = Version.VERSION,
     description =
         "Converts an image to a set of interleaved, color-keyed 3D models to 3D-print the color image.")
 public class ImageTo3dPrint implements Runnable {

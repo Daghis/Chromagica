@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import net.bluevine.chromagica.Version;
 import net.bluevine.chromagica.common.FilamentDataHandler;
 import net.bluevine.chromagica.common.model.FilamentData;
 import picocli.CommandLine;
@@ -20,7 +21,7 @@ import picocli.CommandLine.Spec;
 @Command(
     name = "LoadStepWedge",
     mixinStandardHelpOptions = true,
-    version = "1.0",
+    version = Version.VERSION,
     description = "Processes an image file of the step wedge print.")
 public class LoadStepWedge implements Runnable {
   @Spec CommandSpec spec;

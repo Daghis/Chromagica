@@ -1,5 +1,6 @@
 plugins {
     id 'distribution'
+    id 'java' // ensure we have Java support
 }
 
 def versionFromGit() {
@@ -54,3 +55,31 @@ tasks.named('distTar') {
 tasks.named('distZip') {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
+
+// Generate a Version class at build time containing the current version
+def generatedSourcesDir = layout.buildDirectory.dir("generated/src/main/java")
+
+task generateVersionClass {
+    inputs.property("version", project.version)
+    outputs.dir(generatedSourcesDir)
+
+    doLast {
+        def outputDir = generatedSourcesDir.get().asFile
+        outputDir.mkdirs()
+        def versionFile = new File(outputDir, "net/bluevine/chromagica/Version.java")
+        versionFile.parentFile.mkdirs()
+        versionFile.text = """
+            package net.bluevine.chromagica;
+
+            public class Version {
+                public static final String VERSION = "${project.version}";
+            }
+        """.stripIndent()
+    }
+}
+
+// Add the generated source directory to the main source set
+sourceSets.main.java.srcDir generatedSourcesDir
+
+// Ensure the version class is generated before compilation
+compileJava.dependsOn(generateVersionClass)

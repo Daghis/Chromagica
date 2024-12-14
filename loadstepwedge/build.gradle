@@ -98,9 +98,22 @@ tasks.distZip {
     archiveVersion.set(version) // Dynamically apply version
 }
 
+tasks.named('compileJava') {
+    dependsOn(':generateVersionClass')
+}
+
 idea {
     module {
         downloadJavadoc = true
         downloadSources = true
+    }
+}
+
+sourceSets {
+    main {
+        java {
+            // Add the generated sources from the root project
+            srcDir("$rootProject.buildDir/generated/src/main/java")
+        }
     }
 }
