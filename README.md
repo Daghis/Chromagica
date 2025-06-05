@@ -46,3 +46,5 @@ What this means symbolically:
 ### Code Coverage Sunburst
 
 ![Code coverage "sunburst"](https://codecov.io/gh/Daghis/Chromagica/graphs/sunburst.svg?token=3YC2A4GIE7)
+
+Released under the [MIT License](LICENSE).
