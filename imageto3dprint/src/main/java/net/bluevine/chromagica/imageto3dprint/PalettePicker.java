@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.Comparator;
 import java.util.TreeSet;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
@@ -98,8 +99,13 @@ public class PalettePicker {
     double differenceScore = Double.MAX_VALUE;
   }
 
+  private static final Comparator<Palette> PALETTE_COMPARATOR =
+      comparingDouble(Palette::getDifferenceScore)
+          .thenComparing(
+              palette -> String.join(",", new TreeSet<>(palette.getFilaments())));
+
   public ImmutableList<Palette> getBestPalettes(int countToReturn) {
-    TreeSet<Palette> paletteBeam = new TreeSet<>(comparingDouble(Palette::getDifferenceScore));
+    TreeSet<Palette> paletteBeam = new TreeSet<>(PALETTE_COMPARATOR);
 
     try (ProgressBar progressBar = new ProgressBar("Evaluating palettes", numConcurrentFilaments)) {
       filamentKeys.stream()
