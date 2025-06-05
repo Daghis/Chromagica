@@ -121,12 +121,12 @@ public class ImageTo3dPrint implements Runnable {
 
   @Option(
       names = {"-s", "--size", "--output_size"},
-      description = "Size (in mm) of longest edge of 3D model (default: ${DEFAULT-VALUES}).")
+      description = "Size (in mm) of longest edge of 3D model (default: ${DEFAULT-VALUE}).")
   private double outputSize = 100.0;
 
   @Option(
       names = {"-z", "--pixel_size"},
-      description = "Pixel size (in mm) when printed (default: ${DEFAULT-VALUES}).")
+      description = "Pixel size (in mm) when printed (default: ${DEFAULT-VALUE}).")
   private double pixelSize = 0.5;
 
   @Option(
