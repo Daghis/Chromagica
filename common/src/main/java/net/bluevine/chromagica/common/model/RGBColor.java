@@ -58,7 +58,7 @@ public class RGBColor implements Comparable<RGBColor> {
   }
 
   public int getRGB() {
-    // Combine the components into a single integer (0xRRGGBB)
+    // Combine components into an ARGB integer (0xAARRGGBB)
     return 0xff << 24 | getRInt() << 16 | getGInt() << 8 | getBInt();
   }
 
