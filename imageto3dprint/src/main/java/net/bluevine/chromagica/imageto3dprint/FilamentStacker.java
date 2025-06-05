@@ -13,6 +13,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -60,8 +61,12 @@ public class FilamentStacker {
     return optimizeColorSequence(targetColor, emptyList());
   }
 
+  private static final Comparator<BeamEntry> BEAM_ENTRY_COMPARATOR =
+      comparingDouble(BeamEntry::getDifferenceFromTarget)
+          .thenComparing(entry -> String.join(",", entry.getFilamentSequence()));
+
   private TreeSet<BeamEntry> initializeBeam(RGBColor targetColor, List<String> topColors) {
-    TreeSet<BeamEntry> beam = new TreeSet<>(comparingDouble(BeamEntry::getDifferenceFromTarget));
+    TreeSet<BeamEntry> beam = new TreeSet<>(BEAM_ENTRY_COMPARATOR);
     // Start off the beam with 1 layer of each filament.
     for (Entry<String, FilamentData> filamentDataEntry : filamentData.entrySet()) {
       String filament = filamentDataEntry.getKey();
