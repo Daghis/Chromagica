@@ -136,12 +136,17 @@ public class FilamentStacker {
         .build();
   }
 
-  private final Cache<List<String>, RGBColor> colorCache =
-      CacheBuilder.newBuilder().maximumSize(1000).build();
+  static final int PERMUTATION_CACHE_SIZE = 1000;
+  private Cache<List<String>, RGBColor> permutationCache =
+      CacheBuilder.newBuilder().maximumSize(PERMUTATION_CACHE_SIZE).build();
+
+  void setPermutationCache(Cache<List<String>, RGBColor> permutationCache) {
+    this.permutationCache = permutationCache;
+  }
 
   private RGBColor getCachedColorForSequence(List<String> sequence) {
     try {
-      return colorCache.get(
+      return permutationCache.get(
           sequence, () -> getColorForSequence(sequence, filamentData, baseFilament));
     } catch (ExecutionException e) {
       throw new RuntimeException(e.getCause());
