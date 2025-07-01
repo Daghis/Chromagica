@@ -74,27 +74,25 @@ class FilamentStackerTest {
     assertEquals(List.of("White", "Blue", "White", "Cyan"), result.getFilamentSequence());
   }
 
-  @SuppressWarnings("rawtypes,unchecked")
   @Test
   void optimizeColorSequence_cacheException() throws Exception {
-    try (MockedStatic<CacheBuilder> mockedCacheBuilder = mockStatic(CacheBuilder.class)) {
-      Cache<List<String>, RGBColor> mockedCache = mock(Cache.class);
-      CacheBuilder<List<String>, RGBColor> cacheBuilder = mock(CacheBuilder.class);
-      Mockito.when(cacheBuilder.maximumSize(anyLong())).thenReturn(cacheBuilder);
-      Mockito.when(cacheBuilder.build()).thenReturn(mockedCache);
-      mockedCacheBuilder.when(CacheBuilder::newBuilder).thenReturn(cacheBuilder);
+    FilamentStacker stacker = new FilamentStacker(TEST_FILAMENT_DATA_MAP, "White", 4);
+    Cache<List<String>, RGBColor> cache =
+        CacheBuilder.newBuilder()
+            .maximumSize(FilamentStacker.PERMUTATION_CACHE_SIZE)
+            .build();
+    Cache<List<String>, RGBColor> spyCache = Mockito.spy(cache);
 
-      Mockito.when(mockedCache.get(anyList(), any()))
-          .thenThrow(new ExecutionException(new IllegalArgumentException("Mocked exception")));
+    Mockito.doThrow(new ExecutionException(new IllegalArgumentException("Mocked exception")))
+        .when(spyCache)
+        .get(anyList(), any());
 
-      // Manually test if the mock works as expected
-      FilamentStacker stacker = new FilamentStacker(TEST_FILAMENT_DATA_MAP, "White", 4);
+    stacker.setPermutationCache(spyCache);
 
-      RuntimeException thrown =
-          assertThrows(
-              RuntimeException.class,
-              () -> stacker.optimizeColorSequence(new RGBColor(100, 150, 225)));
-      assertInstanceOf(IllegalArgumentException.class, thrown.getCause());
-    }
+    RuntimeException thrown =
+        assertThrows(
+            RuntimeException.class,
+            () -> stacker.optimizeColorSequence(new RGBColor(100, 150, 225)));
+    assertInstanceOf(IllegalArgumentException.class, thrown.getCause());
   }
 }
