@@ -74,12 +74,11 @@ class FilamentStackerTest {
     assertEquals(List.of("White", "Blue", "White", "Cyan"), result.getFilamentSequence());
   }
 
-  @SuppressWarnings("rawtypes,unchecked")
   @Test
   void optimizeColorSequence_cacheException() throws Exception {
     try (MockedStatic<CacheBuilder> mockedCacheBuilder = mockStatic(CacheBuilder.class)) {
       Cache<List<String>, RGBColor> mockedCache = mock(Cache.class);
-      CacheBuilder<List<String>, RGBColor> cacheBuilder = mock(CacheBuilder.class);
+      CacheBuilder<?, ?> cacheBuilder = mock(CacheBuilder.class);
       Mockito.when(cacheBuilder.maximumSize(anyLong())).thenReturn(cacheBuilder);
       Mockito.when(cacheBuilder.build()).thenReturn(mockedCache);
       mockedCacheBuilder.when(CacheBuilder::newBuilder).thenReturn(cacheBuilder);

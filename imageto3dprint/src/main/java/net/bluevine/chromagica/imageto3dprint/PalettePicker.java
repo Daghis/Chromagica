@@ -24,7 +24,9 @@ import java.util.TreeSet;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import lombok.Data;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import me.tongfei.progressbar.ProgressBar;
 import net.bluevine.chromagica.common.ColorUtil;
 import net.bluevine.chromagica.common.model.FilamentData;
@@ -91,8 +93,9 @@ public class PalettePicker {
     dominantColors = ColorUtil.getDominantColors(pixelColors, IMAGE_CLUSTERS);
   }
 
-  @Data
-  @SuppressWarnings("unused")
+  @Getter
+  @Setter
+  @RequiredArgsConstructor
   public static class Palette {
     final String baseFilament;
     final Set<String> filaments;
